@@ -234,6 +234,8 @@
   .kit-placeholder input::placeholder{color:#b9b5ab}
   .kit-placeholder input:focus{border-color:var(--green)}
   .news .fine{margin-top:18px;font-size:13.5px;color:#a9adb6}
+  .kit-embed{margin:34px auto 0;max-width:720px}
+  .kit-embed .formkit-form{margin:0 auto}
 
   /* ================= work with me ================= */
   .paths{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:48px}
@@ -423,17 +425,11 @@
         <h2>Build optionality, <em style="color:var(--green)">one email at a time.</em></h2>
         <p class="sub">Join free and get the Optionality Starter Guide: seven money moves to buy back your freedom.</p>
 
-        <!-- ============================================================
-             KIT EMBED PLACEHOLDER
-             Replace this whole form block with your Kit form embed code.
-             Until then it points nowhere and tells the visitor nothing is wired up.
-             ============================================================ -->
-        <form class="kit-placeholder" action="#" onsubmit="alert('Kit form not connected yet. Swap this placeholder for your Kit embed code.');return false;">
-          <input type="email" placeholder="you@email.com" required />
-          <button class="btn btn-primary" type="submit">Get the guide</button>
-        </form>
-
-        <p class="fine">Free forever. Unsubscribe any time. Not financial advice.</p>
+        <!-- Kit signup form — Optionality Starter Guide.
+             Hosted version for bios/link-in-bio: https://jonty-collins.kit.com/76bbd29bf5 -->
+        <div class="kit-embed">
+          <script async data-uid="76bbd29bf5" src="https://jonty-collins.kit.com/76bbd29bf5/index.js"></script>
+        </div>
       </div>
     </div>
   </section>
