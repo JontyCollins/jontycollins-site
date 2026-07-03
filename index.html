@@ -234,8 +234,23 @@
   .kit-placeholder input::placeholder{color:#b9b5ab}
   .kit-placeholder input:focus{border-color:var(--green)}
   .news .fine{margin-top:18px;font-size:13.5px;color:#a9adb6}
-  .kit-embed{margin:34px auto 0;max-width:720px}
-  .kit-embed .formkit-form{margin:0 auto}
+  /* Kit embed — transparent, tuned for the dark newsletter panel.
+     Scoped to .kit-embed so the hosted form (jonty-collins.kit.com/76bbd29bf5) keeps its white card + dark text. */
+  .kit-embed{margin:30px auto 0;max-width:460px}
+  .kit-embed .formkit-form{margin:0 auto;background:transparent!important;box-shadow:none!important;border:none!important;min-height:0!important}
+  .kit-embed .formkit-form>div{display:block!important;min-height:0!important}
+  .kit-embed .formkit-background{display:none!important}
+  .kit-embed .formkit-header{display:none!important}
+  .kit-embed .formkit-column{background:transparent!important;width:100%!important;max-width:none!important;flex:1 1 100%!important;padding:0!important}
+  .kit-embed .formkit-input,
+  .kit-embed .formkit-input:focus{
+    background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.22)!important;
+    color:var(--paper)!important;border-radius:10px!important}
+  .kit-embed .formkit-input::placeholder{color:#b9b5ab!important}
+  .kit-embed .formkit-input:focus{border-color:var(--green)!important}
+  .kit-embed .formkit-disclaimer,
+  .kit-embed .formkit-disclaimer p{color:#a9adb6!important}
+  .kit-embed .formkit-powered-by-convertkit-container{opacity:.6}
 
   /* ================= work with me ================= */
   .paths{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:48px}
