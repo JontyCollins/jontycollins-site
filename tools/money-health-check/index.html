@@ -1,0 +1,1272 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Money Health Check · White-label money tool for UK creators</title>
+<meta name="description" content="A few quick questions. A free, personal snapshot of your money — savings, safety net, debts, pension and more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+/* Colours are set from CONFIG.colors in the script — change them there. */
+:root{
+  --brand:#1f2a44; --brand-2:#3d5a99; --accent:#ff8a5b;
+  --ink:#151b2b; --muted:#5f6779; --bg:#f5f4f0; --card:#ffffff; --line:#e6e4dd; --tint:#eef1f8;
+  --good:#1f9d6b; --ok:#d99a1e; --bad:#d9534f;
+  --radius:18px;
+  --display:'Fraunces',Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'DM Sans',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 56px}
+.hero{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-radius:var(--radius);padding:30px 24px 26px;position:relative;overflow:hidden}
+.hero .blob{position:absolute;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero .b1{width:240px;height:240px;right:-80px;top:-90px}
+.hero .b2{width:120px;height:120px;right:100px;bottom:-70px;background:rgba(255,138,91,.35)}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.85}
+.hero h1{font-family:var(--display);margin:8px 0 8px;font-size:clamp(28px,5.6vw,40px);line-height:1.1;font-weight:700;max-width:560px;position:relative}
+.hero p{margin:0;opacity:.92;max-width:520px;position:relative}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;position:relative}
+.pill{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);padding:5px 11px;border-radius:99px;font-size:13px;font-weight:600}
+.card{background:var(--card);border-radius:var(--radius);padding:24px;margin-top:16px;border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.03),0 10px 30px rgba(21,27,43,.06)}
+.progress{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand-2),var(--accent));transition:width .45s ease}
+.stepcount{font-size:12px;color:var(--muted);font-weight:600;margin:10px 0 14px}
+.step{display:none}
+.step.active{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.step h2{font-family:var(--display);font-size:23px;font-weight:600;margin:0 0 4px;line-height:1.25}
+.hint{color:var(--muted);font-size:14px;margin:0 0 16px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.choice{border:2px solid var(--line);background:#fff;border-radius:14px;padding:13px 14px;text-align:left;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s,transform .15s,background .15s}
+.choice:hover{border-color:var(--brand-2);transform:translateY(-1px)}
+.choice.sel{border-color:var(--brand);background:var(--tint)}
+.choice .emo{font-size:20px;display:block;margin-bottom:4px}
+.choice b{display:block;font-size:15px}
+.choice small{color:var(--muted);font-size:13px}
+.choices.chips{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+.choices.chips .choice{padding:10px 12px;text-align:center}
+.reveal{display:none}
+.reveal.on{display:block;animation:fade .3s ease}
+label.f{display:block;font-weight:700;font-size:14px;margin:16px 0 6px}
+label.f .opt{font-weight:500;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.money{display:flex;align-items:center;border:2px solid var(--line);border-radius:12px;padding:0 14px;background:#fff;transition:border-color .15s,opacity .15s}
+.money:focus-within{border-color:var(--brand-2)}
+.money span{color:var(--muted);font-weight:700;font-size:17px;white-space:nowrap}
+.money input{border:0;outline:0;font:inherit;font-size:19px;font-weight:700;padding:11px 8px;width:100%;min-width:0;background:transparent;color:var(--ink)}
+.money.dim{opacity:.45}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.quick button,.linkbtn,.yr{border:1px solid var(--line);background:#fff;border-radius:99px;padding:5px 11px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.quick button:hover,.linkbtn:hover,.yr:hover{border-color:var(--brand-2);color:var(--brand)}
+.linkbtn.on,.yr.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.rangeval{font-family:var(--display);font-size:46px;font-weight:700;color:var(--brand);line-height:1;margin:8px 0 14px}
+.rangeval small{font-family:'DM Sans',sans-serif;font-size:18px;color:var(--muted);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--brand-2);height:28px}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:600}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:24px}
+.btn{border:0;border-radius:12px;padding:13px 22px;font:inherit;font-weight:700;cursor:pointer;transition:filter .15s,transform .15s}
+.btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.btn.primary{background:var(--brand);color:#fff}
+.btn.accent{background:var(--accent);color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--muted);padding-left:4px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.small-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+#results,#roadCard,#cmpCard,#gate,#done{display:none}
+.res-head{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.card h3.t{font-family:var(--display);font-size:22px;font-weight:600;margin:4px 0 4px;line-height:1.2}
+.snap{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 4px}
+.snapc{background:var(--bg);border-radius:14px;padding:14px 14px 14px 18px;position:relative;overflow:hidden}
+.snapc .l{font-size:12.5px;color:var(--muted);font-weight:700}
+.snapc .v{font-family:var(--display);font-size:clamp(24px,5.5vw,32px);font-weight:700;line-height:1.1;margin:4px 0}
+.snapc .t{font-size:12.5px;font-weight:600}
+.snapc::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c,var(--line))}
+/* roadmap (shared by screen and PDF — no colour functions) */
+.rm{list-style:none;margin:12px 0 0;padding:0;position:relative}
+.rm li{position:relative;padding:0 0 14px 40px}
+.rm li::before{content:"";position:absolute;left:13px;top:26px;bottom:0;width:2px;background:var(--line)}
+.rm li:last-child::before{display:none}
+.rm .ic{position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;border:2px solid var(--line);background:#fff;color:var(--muted)}
+.rm .done .ic{background:var(--good);border-color:var(--good);color:#fff}
+.rm .part .ic{background:#fff;border-color:var(--ok);color:var(--ok)}
+.rm .na .ic{border-style:dashed}
+.rm .rt{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rm .rd{font-size:13.5px;color:var(--muted)}
+.rm .here{background:var(--accent);color:#151b2b;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.03em}
+/* comparison bars */
+.yrs{display:flex;gap:6px;margin:12px 0 4px;flex-wrap:wrap}
+.cmp{display:grid;gap:12px;margin-top:12px}
+.cmp .row{display:grid;gap:5px}
+.cmp .nm{font-weight:700;font-size:14px;line-height:1.25;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.cmp .nm .amt{font-family:var(--display);font-size:20px;white-space:nowrap}
+.cmp .nm small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.cmp .tr{position:relative;height:16px;background:var(--bg);border-radius:8px}
+.cmp .bar{position:absolute;left:0;top:0;bottom:0;border-radius:8px;width:0;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.cmp .infl{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.55;transition:left .7s cubic-bezier(.2,.8,.2,1)}
+.cmpkey{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:10px}
+.cmpkey i{width:2px;height:14px;background:var(--ink);opacity:.55;display:inline-block}
+/* gate */
+.gate{display:grid;gap:16px}
+.toc{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:6px 0 14px;padding:0;list-style:none;font-size:14px}
+.toc li{padding-left:22px;position:relative}
+.toc li::before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:700}
+.pdfbadge{display:flex;align-items:center;gap:14px;background:var(--tint);border-radius:14px;padding:14px}
+.pdfbadge .doc{width:46px;height:58px;border-radius:6px;background:#fff;border:2px solid var(--brand-2);position:relative;flex:none}
+.pdfbadge .doc::after{content:"PDF";position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:var(--brand-2)}
+.pdfbadge .doc::before{content:"";position:absolute;top:8px;left:8px;right:8px;height:3px;background:var(--line);box-shadow:0 7px 0 var(--line),0 14px 0 var(--line)}
+.gate h3{font-family:var(--display);margin:0 0 6px;font-size:23px;font-weight:600}
+.field{width:100%;border:2px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;font-size:16px;margin-bottom:10px;outline:0}
+.field:focus{border-color:var(--brand-2)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted);margin:4px 0 12px}
+.consent input{margin-top:3px;accent-color:var(--brand);width:18px;height:18px;flex:none}
+.consent a{color:var(--brand-2)}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+.done-ic{width:56px;height:56px;border-radius:50%;background:var(--good);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700}
+.spinner{width:22px;height:22px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:-5px;margin-right:8px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.concept{font-size:12.5px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:10px;padding:8px 12px;margin:0 0 12px;text-align:center}
+.concept a{color:var(--brand-2);font-weight:700;text-decoration:none}
+footer{font-size:12px;color:var(--muted);margin-top:26px;line-height:1.6}
+footer p{margin:6px 0}
+@media (max-width:520px){
+  .card{padding:18px}.hero{padding:24px 18px}
+  .snap{grid-template-columns:1fr}
+  .row2{grid-template-columns:1fr;gap:0}
+  .toc{grid-template-columns:1fr}
+}
+
+/* ======================= PDF REPORT (rendered off-screen) =======================
+   Kept free of colour functions like color-mix() so the PDF renderer can read it. */
+#pdfStage{position:absolute;left:-12000px;top:0}
+#pdfStage.preview{position:static;left:auto;margin:16px auto 0;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.pdf{width:718px;background:#fff;color:#151b2b;font-family:'DM Sans',Arial,sans-serif;font-size:13.5px;line-height:1.5;padding:0}
+.pdf *{box-sizing:border-box}
+.pdf-cover{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:16px}
+.pdf-cover .ey{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.85}
+.pdf-cover h1{font-family:'Fraunces',Georgia,serif;font-size:32px;line-height:1.1;margin:6px 0 4px;font-weight:700}
+.pdf-cover p{margin:0;opacity:.9;font-size:14px}
+.pdf-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.pdf-kpi{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:10px 12px}
+.pdf-kpi .l{font-size:11.5px;opacity:.85;font-weight:600}
+.pdf-kpi .v{font-size:20px;font-weight:700;line-height:1.2}
+.pdf-kpi .s{font-size:11px;opacity:.8}
+.pdf-disc{border:1px solid #e6e4dd;background:#fafaf7;border-radius:10px;padding:9px 14px;font-size:11.5px;color:#5f6779;margin:0 0 16px;line-height:1.45}
+.pdf-disc b{color:#151b2b}
+.pdf-sec{border:1px solid #e6e4dd;border-radius:14px;margin:0 0 16px;overflow:hidden;background:#fff}
+.pdf-sec-h{display:flex;align-items:center;gap:12px;padding:11px 18px;background:#f5f4f0;border-bottom:3px solid var(--brand-2)}
+.pdf-sec-h .n{width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.pdf-sec-h h2{font-family:'Fraunces',Georgia,serif;font-size:19px;font-weight:600;margin:0;line-height:1.2}
+.pdf-sec-h .tag{margin-left:auto;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.pdf-sec-b{padding:14px 18px 16px}
+.pdf-lede{margin:0 0 10px;color:#3b4252}
+.pdf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0}
+.pdf-grid.two{grid-template-columns:repeat(2,1fr)}
+.pdf-k{background:#f5f4f0;border-radius:10px;padding:10px 12px}
+.pdf-k .l{font-size:11.5px;color:#5f6779;font-weight:600}
+.pdf-k .v{font-size:18px;font-weight:700;line-height:1.25}
+.pdf-k .s{font-size:11px;color:#5f6779}
+.pdf-explain{background:#f3f5fb;border-left:4px solid var(--brand-2);border-radius:8px;padding:10px 13px;font-size:12.3px;color:#3b4252;margin-top:12px}
+.pdf-explain .hd{font-weight:700;color:var(--brand);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.pdf-explain p{margin:4px 0}
+.pdf-explain b{color:#151b2b}
+.pdf-note{background:#fff4ee;border-left:4px solid var(--accent);border-radius:8px;padding:9px 12px;font-size:12.8px;margin-top:10px}
+.pdf-good{background:#ecf7f2;border-left:4px solid var(--good);border-radius:8px;padding:9px 12px;font-size:12.8px;margin-top:10px}
+.pdf-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+.pdf-tbl th,.pdf-tbl td{padding:6px 10px;text-align:right;border-bottom:1px solid #e6e4dd;white-space:nowrap}
+.pdf-tbl th:first-child,.pdf-tbl td:first-child{text-align:left}
+.pdf-tbl th{background:#f5f4f0;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#5f6779}
+.pdf-tbl tr.total td{font-weight:700;border-bottom:0}
+.pdf-tbl tr.me td{font-weight:700;background:#fafaf7}
+.pdf-stack{display:flex;height:22px;border-radius:6px;overflow:hidden;background:#e6e4dd;margin:6px 0 8px}
+.pdf-stack span{display:block;height:100%}
+.pdf-leg{display:grid;grid-template-columns:1fr 1fr;gap:3px 18px;font-size:12.5px}
+.pdf-leg div{display:flex;justify-content:space-between;border-bottom:1px dashed #e6e4dd;padding:3px 0}
+.pdf-leg i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:0}
+.pdf-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin:6px 0 2px}
+.pdf-legend span{display:flex;align-items:center;gap:6px}
+.pdf-legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.pdf-legend b{font-weight:700}
+.pdf-mw{padding:22px 0 22px}
+.pdf-meter{position:relative;height:12px;background:#e6e4dd;border-radius:99px;margin:0}
+.pdf-meter .fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px}
+.pdf-meter .mk{position:absolute;top:-6px;bottom:-6px;width:2px;background:#151b2b;opacity:.5}
+.pdf-meter .mk b{position:absolute;top:-18px;left:-40px;width:80px;text-align:center;font-size:10.5px;color:#5f6779;font-weight:600}
+.pdf-meter .mk em{position:absolute;bottom:-18px;left:-40px;width:80px;text-align:center;font-size:10.5px;color:#5f6779;font-style:normal}
+.pdf-factors{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12.8px}
+.pdf-factors li{padding-left:22px;position:relative}
+.pdf-factors li .m{position:absolute;left:0;top:1px;width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center}
+.pdf-scale{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.pdf-scale div{border:2px solid #e6e4dd;border-radius:10px;padding:8px 10px;font-size:12px;color:#5f6779;text-align:center}
+.pdf-scale div b{display:block;color:#151b2b;font-size:13.5px}
+.pdf-scale div.on{border-color:var(--brand-2);background:#f3f5fb}
+.pdf-look{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.pdf-look li{border:1px solid #e6e4dd;border-radius:10px;padding:9px 12px 9px 38px;position:relative;font-size:12.8px}
+.pdf-look li .ar{position:absolute;left:11px;top:10px;width:18px;height:18px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.pdf-cta{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-radius:14px;padding:18px 20px;margin:0 0 4px}
+.pdf-cta h3{font-family:'Fraunces',Georgia,serif;margin:0 0 4px;font-size:19px}
+.pdf-cta p{margin:0 0 8px;opacity:.92}
+.pdf-cta .u{display:inline-block;background:var(--accent);color:#151b2b;font-weight:700;padding:7px 14px;border-radius:8px;font-size:13px}
+.pdf-legal{font-size:10.5px;color:#5f6779;line-height:1.5;padding-top:12px}
+.pdf-legal p{margin:0;padding-top:10px}
+.pdf svg{display:block;width:100%;height:auto}
+.pdf-break{break-before:page;page-break-before:always;height:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="concept"><b>Live demo.</b> This is a white-label tool for UK finance creators and coaches: your branding, your email list. <a href="mailto:jonty@jontycollins.com?subject=Money%20Health%20Check%20for%20my%20brand" id="buyLink">Get it for your brand →</a> · nothing you enter is sent anywhere</div>
+
+  <header class="hero">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="eyebrow" id="brandEyebrow">Your Brand · Free money check</div>
+    <h1>Your money, in one report</h1>
+    <p>Eleven quick questions. A free, personal check-up on where your money stands — your safety net, debts, investing, pension, and how far you are from your goals.</p>
+    <div class="pills"><span class="pill">⏱ About 3 minutes</span><span class="pill">🔒 Your numbers stay on your device</span><span class="pill">🇬🇧 2026/27 rules</span></div>
+  </header>
+
+  <!-- ================= WIZARD ================= -->
+  <div class="card" id="wizard">
+    <div class="progress"><span id="prog"></span></div>
+    <div class="stepcount" id="stepcount"></div>
+
+    <div class="step" data-id="age">
+      <h2>How old are you?</h2>
+      <p class="hint">Used for your pension and retirement timeline.</p>
+      <div class="rangeval"><span id="ageOut">28</span> <small>years old</small></div>
+      <input type="range" id="age" min="18" max="70" value="28">
+      <div class="scale"><span>18</span><span>35</span><span>50</span><span>70</span></div>
+    </div>
+
+    <div class="step" data-id="income">
+      <h2>How do you earn your money?</h2>
+      <p class="hint">Pick the closest. If you have two jobs, choose your main one.</p>
+      <div class="choices" data-key="income">
+        <button class="choice" data-val="salary"><span class="emo">💼</span><b>Salary</b><small>Fixed yearly pay</small></button>
+        <button class="choice" data-val="hourly"><span class="emo">⏱</span><b>Hourly</b><small>Paid by the hour</small></button>
+        <button class="choice" data-val="self"><span class="emo">🧑‍💻</span><b>Self-employed</b><small>Freelance, sole trader</small></button>
+        <button class="choice" data-val="irregular"><span class="emo">🔀</span><b>It varies</b><small>Mixed or irregular</small></button>
+        <button class="choice" data-val="none"><span class="emo">🎓</span><b>Not earning</b><small>Student, between jobs</small></button>
+      </div>
+      <div class="reveal" data-show="income:salary">
+        <label class="f" for="salary">Yearly salary, before tax</label>
+        <div class="money"><span>£</span><input id="salary" inputmode="numeric" value="32,000" autocomplete="off"></div>
+      </div>
+      <div class="reveal" data-show="income:hourly">
+        <div class="row2">
+          <div><label class="f" for="rate">Hourly rate, before tax</label>
+            <div class="money"><span>£</span><input id="rate" inputmode="decimal" value="13.50" autocomplete="off"></div></div>
+          <div><label class="f" for="hours">Hours a week, on average</label>
+            <div class="money"><input id="hours" inputmode="numeric" value="30" autocomplete="off"><span>hrs</span></div></div>
+        </div>
+      </div>
+      <div class="reveal" data-show="income:self">
+        <label class="f" for="profit">Yearly profit <span class="opt">(after business costs, before tax)</span></label>
+        <div class="money"><span>£</span><input id="profit" inputmode="numeric" value="30,000" autocomplete="off"></div>
+      </div>
+      <div class="reveal" data-show="income:irregular">
+        <label class="f" for="thIrr">Average take-home a month <span class="opt">(what lands in your account)</span></label>
+        <div class="money"><span>£</span><input id="thIrr" inputmode="numeric" value="2,000" autocomplete="off"></div>
+      </div>
+      <div class="reveal" data-show="income:none">
+        <label class="f" for="otherInc">Money coming in each month <span class="opt">(loans, support, benefits — optional)</span></label>
+        <div class="money"><span>£</span><input id="otherInc" inputmode="numeric" value="0" autocomplete="off"></div>
+      </div>
+    </div>
+
+    <div class="step" data-id="sl" data-skip="income:irregular,none">
+      <h2>Do you have a student loan?</h2>
+      <p class="hint">Repayments come out of your pay, so they change your take-home. Started uni in England 2012–2022 is usually Plan 2; from 2023, Plan 5.</p>
+      <div class="choices chips" data-key="sl">
+        <button class="choice" data-val="none"><b>No</b></button>
+        <button class="choice" data-val="p1"><b>Plan 1</b></button>
+        <button class="choice" data-val="p2"><b>Plan 2</b></button>
+        <button class="choice" data-val="p4"><b>Plan 4</b><small>Scotland</small></button>
+        <button class="choice" data-val="p5"><b>Plan 5</b></button>
+        <button class="choice" data-val="pg"><b>Postgrad</b></button>
+      </div>
+    </div>
+
+    <div class="step" data-id="housing">
+      <h2>What's your home set-up?</h2>
+      <p class="hint">Housing is usually the biggest monthly cost, so it gets its own question.</p>
+      <div class="choices" data-key="housing">
+        <button class="choice" data-val="rent"><span class="emo">🔑</span><b>Renting</b></button>
+        <button class="choice" data-val="mortgage"><span class="emo">🏠</span><b>Mortgage</b></button>
+        <button class="choice" data-val="outright"><span class="emo">🏡</span><b>Own outright</b></button>
+        <button class="choice" data-val="family"><span class="emo">👨‍👩‍👧</span><b>With family</b></button>
+      </div>
+      <div class="reveal" data-show="housing:rent,mortgage,family">
+        <label class="f" for="housingCost" id="housingLabel">Your share of the rent each month</label>
+        <div class="money"><span>£</span><input id="housingCost" inputmode="numeric" value="850" autocomplete="off"></div>
+      </div>
+      <div class="reveal" data-show="housing:mortgage">
+        <div class="row2">
+          <div><label class="f" for="mortBal">Mortgage left to pay</label>
+            <div class="money"><span>£</span><input id="mortBal" inputmode="numeric" value="180,000" autocomplete="off"></div></div>
+          <div><label class="f" for="mortYears">Years left on it</label>
+            <div class="money"><input id="mortYears" inputmode="numeric" value="25" autocomplete="off"><span>years</span></div></div>
+        </div>
+      </div>
+      <div class="reveal" data-show="housing:mortgage,outright">
+        <label class="f" for="homeVal">Rough value of your home <span class="opt">(optional — your share)</span></label>
+        <div class="money"><span>£</span><input id="homeVal" inputmode="numeric" value="0" autocomplete="off"></div>
+      </div>
+    </div>
+
+    <div class="step" data-id="spend">
+      <h2>What do you spend in a typical month?</h2>
+      <p class="hint">Everything except housing and debt repayments: bills, food, transport, subscriptions, fun.</p>
+      <label class="f" for="spend">Monthly spending</label>
+      <div class="money" id="spendBox"><span>£</span><input id="spend" inputmode="numeric" value="900" autocomplete="off"></div>
+      <div class="quick"><button type="button" class="linkbtn" id="estSpend">🤷 No idea — estimate it for me</button></div>
+      <div class="small-note" id="estNote" style="display:none">We'll estimate from your income and flag it in your report.</div>
+    </div>
+
+    <div class="step" data-id="cash">
+      <h2>How much do you have in cash savings?</h2>
+      <p class="hint">Savings accounts, cash ISAs, Premium Bonds — money you could get at quickly. Not your current account buffer.</p>
+      <label class="f" for="cash">Total cash savings</label>
+      <div class="money"><span>£</span><input id="cash" inputmode="numeric" value="3,000" autocomplete="off"></div>
+      <div class="quick" data-for="cash"><button data-v="0">£0</button><button data-v="1000">£1k</button><button data-v="5000">£5k</button><button data-v="10000">£10k</button><button data-v="25000">£25k</button></div>
+    </div>
+
+    <div class="step" data-id="invest">
+      <h2>Do you invest outside a pension?</h2>
+      <p class="hint">Stocks and Shares ISA, Lifetime ISA, trading apps, crypto. Leave at £0 if not.</p>
+      <div class="row2">
+        <div><label class="f" for="invest">Total invested now</label>
+          <div class="money"><span>£</span><input id="invest" inputmode="numeric" value="2,000" autocomplete="off"></div></div>
+        <div><label class="f" for="investM">Added each month</label>
+          <div class="money"><span>£</span><input id="investM" inputmode="numeric" value="100" autocomplete="off"></div></div>
+      </div>
+    </div>
+
+    <div class="step" data-id="risk">
+      <h2>If your investments dropped 20% in a year, you'd…</h2>
+      <p class="hint">There's no right answer. This is your <b>attitude to risk</b> — how you'd feel when markets wobble.</p>
+      <div class="choices" data-key="risk">
+        <button class="choice" data-val="cautious"><span class="emo">😬</span><b>Want to sell</b><small>I'd rather not see big drops</small></button>
+        <button class="choice" data-val="balanced"><span class="emo">😐</span><b>Wince, then wait</b><small>Ups and downs are part of it</small></button>
+        <button class="choice" data-val="adventurous"><span class="emo">😎</span><b>Buy more</b><small>Falls are a chance to buy cheaper</small></button>
+      </div>
+    </div>
+
+    <div class="step" data-id="pension">
+      <h2>What about your pension?</h2>
+      <p class="hint">Add up any workplace or personal pensions. A rough guess is fine — your provider's app will show it.</p>
+      <label class="f" for="pensionPot">Pension pot today</label>
+      <div class="money"><span>£</span><input id="pensionPot" inputmode="numeric" value="8,000" autocomplete="off"></div>
+      <div class="reveal" data-show="income:salary,hourly">
+        <div class="row2">
+          <div><label class="f" for="ownPct">You pay in</label>
+            <div class="money"><input id="ownPct" inputmode="decimal" value="5" autocomplete="off"><span>% of pay</span></div></div>
+          <div><label class="f" for="empPct">Your employer pays in</label>
+            <div class="money"><input id="empPct" inputmode="decimal" value="3" autocomplete="off"><span>% of pay</span></div></div>
+        </div>
+        <div class="small-note">Not sure? 5% and 3% are the legal minimums for most workplace pensions.</div>
+      </div>
+      <div class="reveal" data-show="income:self,irregular,none">
+        <label class="f" for="pensionM">You pay in each month</label>
+        <div class="money"><span>£</span><input id="pensionM" inputmode="numeric" value="0" autocomplete="off"></div>
+      </div>
+    </div>
+
+    <div class="step" data-id="debt">
+      <h2>Any debts besides a mortgage or student loan?</h2>
+      <p class="hint">Credit cards, overdrafts, personal loans, car finance, buy now pay later.</p>
+      <label class="f" for="debt">Total owed</label>
+      <div class="money"><span>£</span><input id="debt" inputmode="numeric" value="0" autocomplete="off"></div>
+      <div class="quick" data-for="debt"><button data-v="0">None</button><button data-v="1000">£1k</button><button data-v="3000">£3k</button><button data-v="8000">£8k</button></div>
+      <div id="debtMore" style="display:none">
+        <label class="f" for="debtM">Paying off each month</label>
+        <div class="money"><span>£</span><input id="debtM" inputmode="numeric" value="150" autocomplete="off"></div>
+        <label class="f">Mostly…</label>
+        <div class="choices chips" data-key="debtType">
+          <button class="choice" data-val="card"><b>Credit cards</b><small>~24% APR</small></button>
+          <button class="choice" data-val="loan"><b>Loans / car</b><small>~9% APR</small></button>
+          <button class="choice" data-val="mix"><b>A mix</b><small>~16% APR</small></button>
+          <button class="choice" data-val="zero"><b>0% deals</b><small>0% APR</small></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-id="goal">
+      <h2>What matters most right now?</h2>
+      <p class="hint">Your report will lead with this.</p>
+      <div class="choices" data-key="goal">
+        <button class="choice" data-val="house"><span class="emo">🏠</span><b>Buy a home</b><small>Save a deposit</small></button>
+        <button class="choice" data-val="safety"><span class="emo">🛟</span><b>Safety net</b><small>Build a cash cushion</small></button>
+        <button class="choice" data-val="debt"><span class="emo">⛓️</span><b>Clear my debts</b><small>Be debt-free</small></button>
+        <button class="choice" data-val="early"><span class="emo">🌴</span><b>Retire early</b><small>Work optional sooner</small></button>
+        <button class="choice" data-val="grow"><span class="emo">🌱</span><b>Grow my wealth</b><small>Build long term</small></button>
+      </div>
+      <div class="reveal" data-show="goal:house">
+        <label class="f" for="goalAmt">Deposit you're aiming for</label>
+        <div class="money"><span>£</span><input id="goalAmt" inputmode="numeric" value="30,000" autocomplete="off"></div>
+      </div>
+      <div class="reveal" data-show="goal:early">
+        <label class="f" for="goalAge">Age you'd like work to be optional</label>
+        <div class="money"><input id="goalAge" inputmode="numeric" value="55" autocomplete="off"><span>years old</span></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn ghost" id="back">← Back</button>
+      <button class="btn primary" id="next">Next →</button>
+    </div>
+  </div>
+
+  <!-- ================= FREE: SNAPSHOT ================= -->
+  <div class="card" id="results">
+    <div class="res-head">Your snapshot</div>
+    <div class="snap" id="snap"></div>
+    <div class="actions" style="margin-top:8px"><button class="btn ghost" id="restart">↺ Change my answers</button></div>
+  </div>
+
+  <!-- ================= FREE: ROADMAP ================= -->
+  <div class="card" id="roadCard">
+    <div class="res-head">Your money roadmap</div>
+    <h3 class="t" id="roadTitle">Where you are on the path</h3>
+    <p class="hint" style="margin:0">A commonly used order of priorities in UK personal finance. It's a rule of thumb, not advice.</p>
+    <ul class="rm" id="roadmap"></ul>
+  </div>
+
+  <!-- ================= FREE: COMPARISON ================= -->
+  <div class="card" id="cmpCard">
+    <div class="res-head">Where could your savings grow?</div>
+    <h3 class="t">Cash vs Premium Bonds vs a Stocks and Shares ISA</h3>
+    <p class="hint" style="margin:0" id="cmpLede"></p>
+    <div class="yrs" id="yrs"><button class="yr" data-y="1">1 year</button><button class="yr on" data-y="5">5 years</button><button class="yr" data-y="10">10 years</button><button class="yr" data-y="20">20 years</button><button class="yr" data-y="30">30 years</button></div>
+    <div class="cmp" id="cmp"></div>
+    <div class="cmpkey"><i></i> Line = what you'd need just to keep up with rising prices (2% inflation)</div>
+    <div class="small-note" id="cmpNote"></div>
+  </div>
+
+  <!-- ================= EMAIL GATE ================= -->
+  <div class="card" id="gate">
+    <div class="gate">
+      <div class="pdfbadge"><div class="doc"></div><div><b style="font-size:16px">Your full report is ready</b><div class="small-note" style="margin:2px 0 0" id="pageCount">A personalised PDF to download and keep.</div></div></div>
+      <div>
+        <h3>Get your free full report</h3>
+        <p class="hint" style="margin:0 0 8px">Your report is free when you join the <b class="brandName">Your Brand</b> newsletter. It downloads straight away as a PDF. Inside:</p>
+        <ul class="toc" id="toc"></ul>
+        <form id="gateForm" novalidate>
+          <input class="field" id="fname" placeholder="First name (optional)" autocomplete="given-name" maxlength="40">
+          <input class="field" id="email" type="email" placeholder="Your email" autocomplete="email" required>
+          <label class="consent"><input type="checkbox" id="consent"> <span>Yes, sign me up to the <span class="brandName">Your Brand</span> newsletter. I can unsubscribe any time. <a href="#" id="privacyLink" target="_blank" rel="noopener">Privacy notice</a></span></label>
+          <div class="err" id="err"></div>
+          <button class="btn accent" type="submit" id="gateBtn" style="width:100%">Download my free report (PDF) →</button>
+          <div class="small-note">We only collect your email (and first name if you add it). Your report is built on your device — the numbers you entered never leave it.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DONE ================= -->
+  <div class="card" id="done">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="done-ic">✓</div>
+      <div><h3 class="t" style="margin:0">Your report has downloaded</h3>
+        <div class="small-note" style="margin:2px 0 0">Check your downloads folder (or Files on your phone).</div></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="redownload">⬇ Download again</button>
+      <a class="btn accent" id="ctaLink" href="#" target="_blank" rel="noopener" style="text-decoration:none;display:none"></a>
+      <button class="btn ghost" id="restart3">↺ Try different numbers</button>
+    </div>
+    <div class="small-note" id="fallbackNote" style="display:none"></div>
+  </div>
+
+  <div id="pdfStage"></div>
+
+  <footer>
+    <p><b>Educational and illustrative only — not financial advice.</b> Based on the figures you entered and simple assumptions. Nothing here recommends a product or course of action. Investments can fall as well as rise and tax rules can change. For advice on your own situation, speak to a regulated financial adviser.</p>
+    <p class="brandFoot">Built for Your Brand by Jonty Collins.</p>
+  </footer>
+</div>
+
+<script>
+/* =======================================================================
+   SETTINGS — brand per creator, update figures each April
+   ======================================================================= */
+const CONFIG = {
+  brandName: 'Your Brand',
+  colors: { brand:'#1f2a44', brand2:'#3d5a99', accent:'#ff8a5b' },
+  ctaTitle: 'Want this tool on your own website?',
+  ctaButton: 'Get it for your brand',
+  ctaText: 'The Money Health Check, branded to you and connected to your email list in about 15 minutes. Built for UK finance creators, coaches and educators.',
+  ctaUrl: 'mailto:jonty@jontycollins.com?subject=Money%20Health%20Check%20for%20my%20brand',   // swap for the Gumroad link once live     // full link — clickable in the PDF and on the download screen
+  privacyUrl: 'privacy.html',
+  // EMAIL SIGN-UPS — pick ONE option. Leave both blank for demo mode (nothing is sent anywhere).
+  //  Option A — Kit (ConvertKit): paste your form ID (the number in your Kit form's embed code or URL).
+  kitFormId: '',
+  //  Option B — any other platform: paste a webhook URL from Zapier, Make or Formspree.
+  //  It receives: email, first_name, consent, source. Never put a secret API key in this file.
+  emailEndpoint: '',
+  showCredit: true,   // small "Tool by Jonty Collins" link in the footer — set to false to hide it
+  pdfLib: 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
+};
+const RULES = {
+  year: 2026,
+  pa: 12570, paTaperFrom: 100000, basicBand: 37700, addFrom: 125140,
+  rates: [0.20, 0.40, 0.45],
+  niLo: 12570, niHi: 50270, niEmp: 0.08, niSelf: 0.06, niUpper: 0.02,
+  sl: {none:null, p1:[26900,0.09], p2:[29385,0.09], p4:[33795,0.09], p5:[25000,0.09], pg:[21000,0.06]},
+  psa: {none:Infinity, basic:1000, higher:500, additional:0},
+  savingsTax: {none:0, basic:0.20, higher:0.40, additional:0.45},
+  isaAllowance: 20000,
+  statePension: 12547,
+  plsa: {min:13400, mod:31700, com:43900},
+  inflation: 0.02,
+  growth:  {cautious:0.02, balanced:0.04, adventurous:0.055},  // after inflation (report projections)
+  nominal: {cautious:0.04, balanced:0.06, adventurous:0.075},  // before inflation (cash comparison)
+  savingsAER: 0.045, premiumBonds: 0.0435, premiumBondsMax: 50000,
+  apr: {card:0.24, loan:0.09, mix:0.16, zero:0},
+  reliefAtSource: 1.25,
+  pensionAccessAge: 57
+};
+const RISK_LABEL = {cautious:'Cautious', balanced:'Balanced', adventurous:'Adventurous'};
+
+/* =======================================================================
+   CALCULATIONS (pure — no page access)
+   ======================================================================= */
+function incomeTax(taxable){
+  if(taxable<=0) return 0;
+  const pa = taxable>RULES.paTaperFrom ? Math.max(0, RULES.pa-(taxable-RULES.paTaperFrom)/2) : RULES.pa;
+  const t = Math.max(0, taxable-pa);
+  const b = Math.min(t, RULES.basicBand);
+  const h = Math.max(0, Math.min(t, RULES.addFrom) - RULES.basicBand);
+  const a = Math.max(0, t - RULES.addFrom);
+  return b*RULES.rates[0] + h*RULES.rates[1] + a*RULES.rates[2];
+}
+function nationalInsurance(gross, self){
+  const main = self ? RULES.niSelf : RULES.niEmp;
+  return main*Math.max(0, Math.min(gross,RULES.niHi)-RULES.niLo) + RULES.niUpper*Math.max(0, gross-RULES.niHi);
+}
+function studentLoan(gross, plan){ const p=RULES.sl[plan]; return p ? Math.max(0,gross-p[0])*p[1] : 0; }
+function growSeries(pv, annual, rate, years){
+  const s=[pv]; let v=pv; for(let i=0;i<years;i++){ v=(v+annual)*(1+rate); s.push(v); } return s;
+}
+function debtSeries(balance, payment, apr){
+  const r=apr/12; let b=balance, m=0, int=0; const s=[b];
+  if(balance<=0) return {months:0, interest:0, s};
+  while(b>0.005 && m<600){ const i=b*r; if(payment<=i) return {months:null, interest:null, s}; int+=i; b=Math.max(0,b+i-payment); m++; s.push(b); }
+  return m>=600 ? {months:null, interest:null, s} : {months:m, interest:int, s};
+}
+
+function compute(inp){
+  const o = {inp};
+  // ---- income
+  let gross=null, tax=0, ni=0, sl=0, own=0, thA=0;
+  const employee = inp.income==='salary' || inp.income==='hourly';
+  if(employee){
+    gross = inp.income==='salary' ? inp.salary : inp.rate*inp.hours*52;
+    own = gross*inp.ownPct/100;
+    tax = incomeTax(gross-own); ni = nationalInsurance(gross,false); sl = studentLoan(gross,inp.sl);
+    thA = gross-own-tax-ni-sl;
+  } else if(inp.income==='self'){
+    gross = inp.profit; tax = incomeTax(gross); ni = nationalInsurance(gross,true); sl = studentLoan(gross,inp.sl);
+    thA = gross-tax-ni-sl;
+  } else if(inp.income==='irregular') thA = inp.thIrr*12;
+  else thA = inp.otherInc*12;
+  Object.assign(o,{employee,gross,tax,ni,sl,pensionOwnPre:own});
+  o.th = Math.max(0,thA)/12;
+  const g = gross ?? (inp.income==='irregular' ? inp.thIrr*12*1.2 : inp.otherInc*12);
+  o.band = g>RULES.addFrom ? 'additional' : g>RULES.niHi ? 'higher' : g>RULES.pa ? 'basic' : 'none';
+
+  // ---- monthly money
+  o.housing = inp.housing==='outright' ? 0 : inp.housingCost;
+  o.spendEstimated = inp.spendEstimate;
+  o.spend = inp.spendEstimate ? Math.max(500, Math.round(o.th*0.42/10)*10) : inp.spend;
+  o.debtPay = inp.debt>0 ? inp.debtM : 0;
+  o.investM = inp.investM;
+  o.pensionFromPay = employee ? 0 : inp.pensionM;
+  o.leftover = o.th - o.housing - o.spend - o.debtPay - o.investM - o.pensionFromPay;
+  o.saving = o.investM + o.pensionFromPay + o.leftover;
+  o.savingsRate = o.th>0 ? o.saving/o.th : null;
+
+  // ---- safety net
+  o.essentials = o.housing + o.spend + o.debtPay;
+  o.emMonths = o.essentials>0 ? inp.cash/o.essentials : null;
+
+  // ---- debts
+  o.apr = inp.debt>0 ? RULES.apr[inp.debtType||'mix'] : 0;
+  o.highDebt = inp.debt>0 && o.apr>=0.15;
+  o.payoff = debtSeries(inp.debt, o.debtPay, o.apr);
+  o.payoff50 = debtSeries(inp.debt, o.debtPay+50, o.apr);
+  o.payoff100 = debtSeries(inp.debt, o.debtPay+100, o.apr);
+
+  // ---- home & net worth
+  o.equity = inp.housing==='mortgage' && inp.homeVal>0 ? inp.homeVal-inp.mortBal : inp.housing==='outright' ? inp.homeVal : 0;
+  o.homeIncluded = (inp.housing==='mortgage'||inp.housing==='outright') && inp.homeVal>0;
+  o.mortgageFreeYear = inp.housing==='mortgage' ? RULES.year+inp.mortYears : null;
+  o.mortgageFreeAge  = inp.housing==='mortgage' ? inp.age+inp.mortYears : null;
+  o.netWorth = inp.cash + inp.invest + inp.pensionPot + o.equity - inp.debt;
+
+  // ---- cash vs Premium Bonds vs ISA (before inflation)
+  o.cmpMonthly = Math.max(0,o.leftover) + o.investM;
+  o.cmpExample = o.cmpMonthly < 1;
+  const cm = o.cmpExample ? 100 : o.cmpMonthly, lump = inp.cash;
+  const psa = RULES.psa[o.band], str = RULES.savingsTax[o.band], isaR = RULES.nominal[inp.risk||'balanced'];
+  let sv=lump, pb=lump, isa=lump, inf=lump, paid=lump, tx=0;
+  o.cmp = [{y:0,sav:sv,pb,isa,inf,paid,tax:0}];
+  for(let y=1;y<=30;y++){
+    const c=cm*12; paid+=c;
+    sv+=c; const i=sv*RULES.savingsAER, t=Math.max(0,i-psa)*str; tx+=t; sv+=i-t;
+    pb+=c; pb+=Math.min(pb,RULES.premiumBondsMax)*RULES.premiumBonds;
+    isa=(isa+c)*(1+isaR);
+    inf=(inf+c)*(1+RULES.inflation);
+    o.cmp.push({y,sav:sv,pb,isa,inf,paid,tax:tx});
+  }
+  o.cmpUsed = cm;
+
+  // ---- investing (after inflation)
+  o.isaUsed = Math.min(1, inp.investM*12/RULES.isaAllowance);
+  o.investHorizon = 30;
+  o.investRisk = {};
+  for(const k in RULES.growth) o.investRisk[k] = growSeries(inp.invest, inp.investM*12, RULES.growth[k], o.investHorizon);
+  const maxM = RULES.isaAllowance/12;
+  const extras = [['Current (£'+Math.round(inp.investM).toLocaleString('en-GB')+'/mo)', inp.investM]];
+  [100,200,500].forEach(x=>{ const m=Math.min(maxM, inp.investM+x); if(m>inp.investM+0.5) extras.push(['+£'+x+'/mo', m]); });
+  o.investExtra = extras.filter((e,i,a)=>a.findIndex(z=>Math.abs(z[1]-e[1])<1)===i)
+    .map(([label,m])=>({label, monthly:m, s:growSeries(inp.invest, m*12, RULES.growth.balanced, o.investHorizon)}));
+
+  // ---- pension (after inflation)
+  o.spa = (RULES.year-inp.age) >= 1978 ? 68 : 67;
+  o.yearsToSpa = Math.max(0, o.spa-inp.age);
+  o.pensionAnnual = employee ? gross*(inp.ownPct+inp.empPct)/100 : inp.pensionM*12*RULES.reliefAtSource;
+  o.employerAnnual = employee ? gross*inp.empPct/100 : 0;
+  o.pensionRisk = {}; o.pensionProj = {};
+  for(const k in RULES.growth){
+    const s = growSeries(inp.pensionPot, o.pensionAnnual, RULES.growth[k], o.yearsToSpa);
+    o.pensionRisk[k]=s; const pot=s[s.length-1];
+    o.pensionProj[k] = {pot, fromPot: pot*0.04, income: pot*0.04 + RULES.statePension};
+  }
+
+  // ---- financial independence
+  o.yearSpend = (o.housing+o.spend)*12;
+  o.fiNumber = o.yearSpend*25;
+  o.fiNA = o.fiNumber<=0;
+  const fiC = inp.investM*12 + o.pensionAnnual;
+  let a = inp.invest+inp.pensionPot, yrs=0;
+  if(!o.fiNA) while(a<o.fiNumber && yrs<70){ a=(a+fiC)*(1+RULES.growth.balanced); yrs++; }
+  o.fiYears = (!o.fiNA && a>=o.fiNumber) ? yrs : null;
+  o.fiAge = o.fiYears===null ? null : inp.age+o.fiYears;
+  o.fiProgress = o.fiNA ? 0 : Math.min(1,(inp.invest+inp.pensionPot)/o.fiNumber);
+  o.fiContribM = fiC/12;
+
+  // ---- attitude to risk & capacity for loss
+  o.risk = inp.risk || 'balanced';
+  const shortGoal = inp.goal==='house' || inp.goal==='safety';
+  o.capFactors = [
+    ['3+ months of emergency savings', o.emMonths!==null && o.emMonths>=3],
+    ['No expensive debt', !o.highDebt],
+    ['Money left over each month', o.leftover>0],
+    ['Long time horizon (10+ years)', !shortGoal && o.yearsToSpa>=10]
+  ];
+  const score = o.capFactors.filter(f=>f[1]).length;
+  o.capacity = score>=4 ? 'high' : score>=2 ? 'medium' : 'low';
+
+  // ---- goal
+  const G = {type:inp.goal};
+  if(inp.goal==='house'){
+    G.target=inp.goalAmt; G.have=inp.cash+inp.invest; G.monthly=Math.max(0,o.leftover)+inp.investM;
+    G.months = G.have>=G.target ? 0 : (G.monthly>0 ? Math.ceil((G.target-G.have)/G.monthly) : null);
+  } else if(inp.goal==='safety'){
+    G.target=o.essentials*6; G.have=inp.cash; G.monthly=Math.max(0,o.leftover);
+    G.months = G.have>=G.target ? 0 : (G.monthly>0 ? Math.ceil((G.target-G.have)/G.monthly) : null);
+  } else if(inp.goal==='debt'){
+    G.months = o.payoff.months;
+  } else if(inp.goal==='early'){
+    G.age=inp.goalAge; const n=Math.max(1,inp.goalAge-inp.age), r=RULES.growth.balanced;
+    const need=Math.max(0, o.fiNumber-(inp.invest+inp.pensionPot)*Math.pow(1+r,n));
+    G.monthlyNeeded = need>0 ? need*r/((Math.pow(1+r,n)-1)*(1+r))/12 : 0;
+    G.monthlyNow = fiC/12; G.beforeAccess = inp.goalAge < RULES.pensionAccessAge;
+  }
+  o.goal = G;
+
+  // ---- roadmap (a common order of priorities — descriptive only)
+  const em=o.emMonths??0;
+  o.roadmap = [
+    {t:'Keep a small buffer', d:'Around one month of essentials in cash, so a surprise bill doesn’t go on a card.',
+      s: o.essentials>0 && inp.cash>=o.essentials ? 'done' : inp.cash>0 ? 'part' : 'todo'},
+    {t:'Clear expensive debt', d:'Credit cards and overdrafts often charge 20%+ — more than most savings or investments earn.',
+      s: inp.debt<=0 || inp.debtType==='zero' ? 'done' : inp.debtType==='loan' ? 'part' : 'todo'},
+    employee
+      ? {t:'Get your employer pension contributions', d: inp.empPct>0 ? `Your employer adds ${inp.empPct}% of your pay. Some employers add more if you do.` : 'Most employees aged 22+ earning over £10,000 should be getting employer contributions.',
+         s: inp.empPct>0 ? 'done' : 'todo'}
+      : {t:'Use pension tax relief', d:'No employer pays in, but the government adds £25 for every £100 you put into a personal pension.',
+         s: inp.pensionM>0 ? 'done' : 'na'},
+    {t:'Build a 3–6 month emergency fund', d:'Enough to cover essentials if your income stopped for a while.',
+      s: em>=3 ? 'done' : em>=1 ? 'part' : 'todo'},
+    {t:'Save for goals in the next few years', d:'House deposits and other medium-term plans are often kept in cash or a Lifetime ISA.',
+      s: inp.goal==='house' ? (G.months===0 ? 'done' : G.have>0 ? 'part' : 'todo') : 'na'},
+    {t:'Invest for the long term', d:'Money you won’t need for 5+ years, usually in a Stocks and Shares ISA or pension.',
+      s: inp.investM>0 ? 'done' : inp.invest>0 ? 'part' : 'todo'}
+  ];
+  o.roadHere = o.roadmap.findIndex(x=>x.s==='todo'||x.s==='part');
+  return o;
+}
+
+/* =======================================================================
+   PAGE
+   ======================================================================= */
+if (typeof document !== 'undefined') {
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const gbp = n => (n<0?'−':'') + '£' + Math.abs(Math.round(n)).toLocaleString('en-GB');
+const pct = (n,d=0) => (n*100).toFixed(d) + '%';
+const num = id => { const v=parseFloat(String($('#'+id).value).replace(/[^0-9.]/g,'')); return isFinite(v)&&v>0 ? v : 0; };
+const esc = s => String(s).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+const C = { ...CONFIG.colors, ink:'#151b2b', muted:'#5f6779', line:'#e6e4dd', good:'#1f9d6b', ok:'#d99a1e', bad:'#d9534f',
+            cash:'#6b8fd6', pb:'#e0a23a', isa:'#1f9d6b', soft:'#b8c4dc' };
+
+// branding
+const root=document.documentElement.style;
+root.setProperty('--brand',C.brand); root.setProperty('--brand-2',C.brand2); root.setProperty('--accent',C.accent);
+$$('.brandName').forEach(e=>e.textContent=CONFIG.brandName);
+$('#brandEyebrow').textContent = CONFIG.brandName + ' · Free money check';
+if(CONFIG.showCredit===false) $('.brandFoot').remove();
+else $('.brandFoot').innerHTML = 'Tool by <a href="https://jontycollins.com/tools/money-health-check/" target="_blank" rel="noopener" style="color:inherit">Jonty Collins</a>';
+$('#privacyLink').href = CONFIG.privacyUrl;
+if(/^(https?|mailto):/.test(CONFIG.ctaUrl)){ const cl=$('#ctaLink'); cl.href=CONFIG.ctaUrl; cl.textContent=(CONFIG.ctaButton||'Find out more')+' →'; cl.style.display='inline-block'; }
+
+/* ---------- wizard ---------- */
+const state = {income:null, sl:null, housing:null, risk:null, debtType:'mix', goal:null, spendEstimate:false};
+const steps = $$('.step');
+const required = {income:'income', sl:'sl', housing:'housing', risk:'risk', goal:'goal'};
+let cur = 0;
+function visibleSteps(){
+  return steps.filter(s=>{ const sk=s.dataset.skip; if(!sk) return true; const [k,v]=sk.split(':'); return !v.split(',').includes(state[k]); });
+}
+function updateReveal(){
+  $$('[data-show]').forEach(el=>{ const [k,v]=el.dataset.show.split(':'); el.classList.toggle('on', v.split(',').includes(state[k])); });
+  const lab = {rent:'Your share of the rent each month', mortgage:'Monthly mortgage payment', family:'What you pay towards the house each month'}[state.housing];
+  if(lab) $('#housingLabel').textContent = lab;
+  $('#debtMore').style.display = num('debt')>0 ? 'block' : 'none';
+}
+const canGo = step => { const k=required[step.dataset.id]; return !k || !!state[k]; };
+function show(i){
+  const vis=visibleSteps(); i=Math.max(0,Math.min(i,vis.length-1)); cur=i;
+  steps.forEach(s=>s.classList.toggle('active', s===vis[i]));
+  $('#prog').style.width=(i/vis.length*100)+'%';
+  $('#stepcount').textContent=`Question ${i+1} of ${vis.length}`;
+  $('#back').style.visibility = i===0 ? 'hidden' : 'visible';
+  $('#next').textContent = i===vis.length-1 ? 'See my snapshot ✨' : 'Next →';
+  $('#next').disabled = !canGo(vis[i]);
+  updateReveal();
+}
+function next(){ const vis=visibleSteps(); if(!canGo(vis[cur])) return; if(cur<vis.length-1) show(cur+1); else finish(); }
+$('#next').addEventListener('click', next);
+$('#back').addEventListener('click', ()=>show(cur-1));
+const autoAdvance=['sl','risk'];
+$$('.choices').forEach(group=>group.addEventListener('click',e=>{
+  const b=e.target.closest('.choice'); if(!b) return;
+  group.querySelectorAll('.choice').forEach(x=>x.classList.remove('sel'));
+  b.classList.add('sel'); state[group.dataset.key]=b.dataset.val; show(cur);
+  if(autoAdvance.includes(group.dataset.key)) setTimeout(next,260);
+}));
+$('.choices[data-key=debtType] .choice[data-val=mix]').classList.add('sel');
+$$('.money input').forEach(inp=>{
+  inp.addEventListener('focus',()=>inp.select());
+  inp.addEventListener('blur',()=>{ if(['rate','ownPct','empPct'].includes(inp.id)) return;
+    const v=parseFloat(String(inp.value).replace(/[^0-9.]/g,''))||0; inp.value=Math.round(v).toLocaleString('en-GB'); });
+});
+$('#debt').addEventListener('input', updateReveal);
+$$('.quick[data-for]').forEach(q=>q.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
+  $('#'+q.dataset.for).value=Number(b.dataset.v).toLocaleString('en-GB'); updateReveal(); }));
+$('#age').addEventListener('input',e=>$('#ageOut').textContent=e.target.value);
+$('#estSpend').addEventListener('click',()=>{
+  state.spendEstimate=!state.spendEstimate;
+  $('#estSpend').classList.toggle('on',state.spendEstimate); $('#spendBox').classList.toggle('dim',state.spendEstimate);
+  $('#spend').disabled=state.spendEstimate; $('#estNote').style.display=state.spendEstimate?'block':'none';
+});
+
+let R=null, pdfDoc=null;
+function readInputs(){
+  return { age:+$('#age').value, income:state.income,
+    salary:num('salary'), rate:num('rate'), hours:num('hours'), profit:num('profit'), thIrr:num('thIrr'), otherInc:num('otherInc'),
+    sl:(state.income==='irregular'||state.income==='none')?'none':(state.sl||'none'),
+    housing:state.housing, housingCost:num('housingCost'), mortBal:num('mortBal'), mortYears:Math.round(num('mortYears')), homeVal:num('homeVal'),
+    spend:num('spend'), spendEstimate:state.spendEstimate,
+    cash:num('cash'), invest:num('invest'), investM:num('investM'), risk:state.risk||'balanced',
+    pensionPot:num('pensionPot'), ownPct:Math.min(100,num('ownPct')), empPct:Math.min(100,num('empPct')), pensionM:num('pensionM'),
+    debt:num('debt'), debtM:num('debtM'), debtType:state.debtType||'mix',
+    goal:state.goal, goalAmt:num('goalAmt'), goalAge:Math.round(num('goalAge'))||55 };
+}
+const freeCards=['#results','#roadCard','#cmpCard'];
+function finish(){
+  R=compute(readInputs()); pdfDoc=null;
+  $('#prog').style.width='100%'; $('#wizard').style.display='none';
+  renderSnapshot(); renderRoadmap(); renderCmp(5); renderToc();
+  freeCards.forEach(s=>$(s).style.display='block');
+  $('#gate').style.display='block'; $('#done').style.display='none';
+  $('#results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function restart(){
+  [...freeCards,'#gate','#done'].forEach(s=>$(s).style.display='none');
+  $('#pdfStage').innerHTML=''; $('#pdfStage').classList.remove('preview');
+  $('#wizard').style.display='block'; show(0); $('#wizard').scrollIntoView({behavior:'smooth'});
+}
+$('#restart').addEventListener('click',restart); $('#restart3').addEventListener('click',restart);
+
+/* ---------- descriptive verdicts ---------- */
+function rateVerdict(r){
+  if(r===null) return ['No income entered',C.line];
+  if(r<0) return ['Spending more than comes in',C.bad];
+  if(r<0.10) return ['Under 10% — a common starting goal',C.ok];
+  if(r<0.20) return ['10–20% of take-home',C.good];
+  return ['Over 20% — a strong rate',C.good];
+}
+function emVerdict(m){
+  if(m===null) return ['—',C.line];
+  if(m<1) return ['Under a month of essentials',C.bad];
+  if(m<3) return ['A common guide is 3–6 months',C.ok];
+  if(m<=6) return ['Within the common 3–6 month range',C.good];
+  return ['More than 6 months',C.good];
+}
+const mo = m => m===null ? '—' : (m>=10?Math.round(m):m.toFixed(1)) + ' months';
+const moShort = m => m===null ? '—' : (m>=10?Math.round(m):m.toFixed(1)) + ' mo';
+function monthsToDate(m){ const d=new Date(); d.setMonth(d.getMonth()+m); return d.toLocaleDateString('en-GB',{month:'long',year:'numeric'}); }
+const ym = m => `${Math.floor(m/12)}y ${m%12}m`;
+function countUp(el,to,fmt,ms=1000){ const t0=performance.now();
+  (function f(t){const p=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-p,3); el.textContent=fmt(to*e); if(p<1) requestAnimationFrame(f);})(t0); }
+
+/* ---------- free snapshot ---------- */
+function renderSnapshot(){
+  const [rv,rc]=rateVerdict(R.savingsRate), [ev,ec]=emVerdict(R.emMonths);
+  $('#snap').innerHTML = `
+    <div class="snapc" style="--c:${rc}"><div class="l">Saving rate</div><div class="v" id="sv1">0%</div><div class="t">${rv}</div></div>
+    <div class="snapc" style="--c:${ec}"><div class="l">Emergency cover</div><div class="v" id="sv2">0 mo</div><div class="t">${ev}</div></div>
+    <div class="snapc" style="--c:${C.brand2}"><div class="l">Net worth</div><div class="v" id="sv3">£0</div><div class="t">${R.homeIncluded?'Including your home':'Not counting property'}</div></div>`;
+  requestAnimationFrame(()=>{
+    countUp($('#sv1'), R.savingsRate??0, v=>pct(v));
+    countUp($('#sv2'), R.emMonths||0, moShort);
+    countUp($('#sv3'), R.netWorth, gbp);
+  });
+}
+function roadmapHTML(){
+  const ic={done:'✓',part:'…',todo:'',na:'–'};
+  return R.roadmap.map((s,i)=>`<li class="${s.s}"><span class="ic">${ic[s.s]||i+1}</span>
+    <div class="rt">${s.t}${i===R.roadHere?'<span class="here">YOU ARE HERE</span>':''}</div>
+    <div class="rd">${s.s==='na'?'<i>May not apply to you right now.</i> ':''}${s.d}</div></li>`).join('');
+}
+function renderRoadmap(){
+  $('#roadmap').innerHTML = roadmapHTML();
+  const done=R.roadmap.filter(s=>s.s==='done').length, appl=R.roadmap.filter(s=>s.s!=='na').length;
+  $('#roadTitle').textContent = R.roadHere===-1 ? `All ${appl} steps ticked off` : `${done} of ${appl} steps ticked off`;
+}
+function renderCmp(y){
+  $$('.yr').forEach(b=>b.classList.toggle('on', +b.dataset.y===y));
+  const p=R.cmp[y], rows=[
+    ['Easy-access savings', `${(RULES.savingsAER*100).toFixed(1)}% AER${p.tax>1?', after tax':''}`, p.sav, C.cash],
+    ['Premium Bonds', `Average ${(RULES.premiumBonds*100).toFixed(2)}%, tax-free`, p.pb, C.pb],
+    ['Stocks & Shares ISA', `${RISK_LABEL[R.risk]} — ${(RULES.nominal[R.risk]*100).toFixed(1).replace('.0','')}% a year`, p.isa, C.isa]
+  ];
+  const max=Math.max(...rows.map(r=>r[2]), p.inf)*1.04||1;
+  $('#cmpLede').innerHTML = `If your <b>${gbp(R.inp.cash)}</b> of savings plus <b>${gbp(R.cmpUsed)} a month</b>${R.cmpExample?' (an example amount)':' (what you have spare)'} went into each, after <b>${y} year${y>1?'s':''}</b> you'd have put in ${gbp(p.paid)}:`;
+  $('#cmp').innerHTML = rows.map(r=>`<div class="row"><div class="nm"><span>${r[0]}<small>${r[1]}</small></span><span class="amt">${gbp(r[2])}</span></div>
+    <div class="tr"><div class="bar" style="background:${r[3]}" data-w="${(r[2]/max*100).toFixed(1)}"></div><div class="infl" style="left:${(p.inf/max*100).toFixed(1)}%"></div></div></div>`).join('');
+  requestAnimationFrame(()=>$$('#cmp .bar').forEach(b=>b.style.width=b.dataset.w+'%'));
+  $('#cmpNote').textContent = y<5
+    ? 'Over short periods, cash is steadier — investments can fall, and there may not be time to recover.'
+    : 'Investments have more time to recover from bad years over longer periods, but returns are never guaranteed. Premium Bond prizes are random; most people win less than the average.';
+}
+$('#yrs').addEventListener('click',e=>{ const b=e.target.closest('.yr'); if(b) renderCmp(+b.dataset.y); });
+function renderToc(){
+  const items=['Your goal timeline','Where every pound goes','Tax, NI & take-home','Your safety net'];
+  if(R.inp.debt>0) items.push('Your debt-free date');
+  if(R.inp.housing==='mortgage') items.push('Your mortgage-free date');
+  items.push('Attitude to risk & capacity for loss','Cash vs Premium Bonds vs ISA chart','Investing: three risk paths','Investing: what more could do','Pension at '+R.spa+' vs retirement standards','Your financial independence age','Things worth looking into');
+  $('#toc').innerHTML = items.map(i=>`<li>${i}</li>`).join('');
+  $('#pageCount').textContent = 'A personalised PDF with charts and plain-English explanations — yours to keep.';
+}
+
+/* ---------- email gate → PDF ---------- */
+let libPromise=null;
+function loadLib(){
+  if(window.html2pdf) return Promise.resolve();
+  if(!libPromise) libPromise=new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=CONFIG.pdfLib; s.onload=res; s.onerror=()=>{libPromise=null;rej(new Error('lib'));}; document.head.appendChild(s); });
+  return libPromise;
+}
+$('#email').addEventListener('focus',()=>loadLib().catch(()=>{}),{once:true});   // warm up while they type
+$('#gateForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const email=$('#email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ $('#err').textContent='Please enter a valid email address.'; return; }
+  if(!$('#consent').checked){ $('#err').textContent='Please tick the box to get your free report.'; return; }
+  $('#err').textContent='';
+  const btn=$('#gateBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Building your report…';
+  try{
+    // Data minimisation: only email, optional first name and consent leave the device — never the financial answers.
+    const first=$('#fname').value.trim();
+    if(CONFIG.kitFormId){
+      const fd=new FormData(); fd.append('email_address',email); if(first) fd.append('fields[first_name]',first);
+      await fetch(`https://app.convertkit.com/forms/${encodeURIComponent(CONFIG.kitFormId)}/subscriptions`,{method:'POST',body:fd,mode:'no-cors'});
+    } else if(CONFIG.emailEndpoint){
+      const res=await fetch(CONFIG.emailEndpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({email, first_name:first, consent:true, source:'money-health-check'})});
+      if(!res.ok) throw new Error('signup');
+    }
+  }catch(_){ $('#err').textContent='Something went wrong signing you up — please try again.'; btn.disabled=false; btn.textContent='Download my free report (PDF) →'; return; }
+  buildReport();
+  try{
+    await loadLib();
+    await makePdf();
+    pdfDoc.save(fileName());
+    $('#gate').style.display='none'; $('#done').style.display='block';
+    $('#done').scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(err){
+    // Fallback: show the report on the page with the browser's print-to-PDF
+    $('#pdfStage').classList.add('preview');
+    $('#gate').style.display='none'; $('#done').style.display='block';
+    $('#done h3').textContent='Your report is ready below';
+    $('#redownload').textContent='⬇ Save as PDF';
+    $('#fallbackNote').style.display='block';
+    $('#fallbackNote').textContent='The download couldn’t start on this device, so your report is shown below. Use Save as PDF to keep a copy.';
+    pdfDoc=null;
+  }
+  btn.disabled=false; btn.textContent='Download my free report (PDF) →';
+});
+$('#redownload').addEventListener('click',()=>{ if(pdfDoc) pdfDoc.save(fileName()); else window.print(); });
+const fileName = () => (CONFIG.brandName.replace(/[^a-z0-9]+/gi,'-')+'-money-health-check.pdf').replace(/^-/,'').toLowerCase();
+
+// Pairs that must never be split across pages
+function glued(prev, cur){
+  const is=(el,c)=>el.classList.contains(c), chart=el=>el.tagName==='IMG';
+  if(is(prev,'pdf-stack')||is(prev,'pdf-legend')||is(prev,'pdf-lbl')) return true;   // bar→key, key→chart, label→bar
+  if(is(cur,'pdf-leg')||is(cur,'pdf-foot')||is(cur,'pdf-note')||is(cur,'pdf-good')) return true; // keys, footnotes, notes
+  if(is(prev,'pdf-grid') && is(cur,'pdf-mw')) return true;                           // headline figures→progress bar
+  if(chart(prev) && (is(cur,'pdf-tbl')||is(cur,'pdf-lbl'))) return true;              // chart→its table
+  if(is(prev,'pdf-leg') && is(cur,'pdf-tbl')) return true;                           // cashflow key→pay table
+  return false;
+}
+function computeSlices(root, pageH){
+  const total=root.offsetHeight, top0=root.getBoundingClientRect().top;
+  const y=el=>el.getBoundingClientRect().top-top0;
+  // Safe places to break: between sections, and between blocks inside a section
+  // (paragraphs, charts, table rows, list items) — never through a chart or a line of text.
+  const cuts=new Set();
+  [...root.children].forEach(ch=>cuts.add(Math.round(y(ch))));
+  root.querySelectorAll('.pdf-sec-b').forEach(b=>{
+    const kids=[...b.children];
+    kids.forEach((ch,i)=>{
+      if(i<2) return;                                   // keep heading + intro together
+      if(glued(kids[i-1], ch)) return;                  // keep things that are read together on one page
+      cuts.add(Math.round(y(ch))-6);
+    });
+  });
+  root.querySelectorAll('.pdf-look li:nth-child(n+3), .rm li:nth-child(n+3), .pdf-legal p')
+      .forEach(el=>cuts.add(Math.round(y(el))-2));
+  const sorted=[...cuts].filter(c=>c>0&&c<total).sort((a,b)=>a-b);
+  const slices=[]; let start=0;
+  while(start<total-4){
+    const limit=start+pageH;
+    if(limit>=total){ slices.push([start,total]); break; }
+    const ok=sorted.filter(c=>c>start+80&&c<=limit);
+    const end=ok.length?ok[ok.length-1]:limit;
+    slices.push([start,end]); start=end;
+  }
+  const cta=root.querySelector('.pdf-cta'); const ctaBox = cta ? {top:y(cta), h:cta.offsetHeight, left:cta.offsetLeft, w:cta.offsetWidth} : null;
+  return {slices,total,width:root.offsetWidth,cta:ctaBox};
+}
+async function makePdf(){
+  if(document.fonts && document.fonts.ready) await document.fonts.ready;
+  const src=$('#pdfStage .pdf');
+  await Promise.all([...src.querySelectorAll('img')].map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));
+  const M={top:12, side:10, bottom:14}, innerW=210-2*M.side, innerH=297-M.top-M.bottom;
+  // Scale capped so the image stays under iPhone canvas limits (~16 million pixels).
+  const scale=Math.min(2, Math.sqrt(16e6/(src.offsetWidth*src.offsetHeight*1.05)));
+  const h2c={scale, useCORS:true, backgroundColor:'#ffffff', logging:false, scrollX:0, scrollY:0};
+  const sy=window.scrollY; window.scrollTo(0,0);
+  let pdf=null, full, plan;
+  try{
+    const worker=html2pdf().set({margin:[0,M.side,0,M.side], html2canvas:h2c, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:[]}}).from(src).toContainer();
+    const cont=await worker.get('container');
+    const root=cont.querySelector('.pdf')||cont.firstElementChild||cont;
+    await Promise.all([...root.querySelectorAll('img')].map(im=>im.decode?im.decode().catch(()=>{}):Promise.resolve()));
+    const pxPerMm=root.offsetWidth/innerW;
+    plan=computeSlices(root, Math.floor(innerH*pxPerMm)-2);
+    full=await worker.toCanvas().get('canvas');
+  } finally { window.scrollTo(0,sy); }
+  const k=full.height/plan.total;   // vertical scale, so small layout rounding can't drift
+  for(const [a,b] of plan.slices){
+    const pc=document.createElement('canvas'); pc.width=full.width; pc.height=Math.max(1,Math.round((b-a)*k));
+    const ctx=pc.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,pc.width,pc.height);
+    ctx.drawImage(full, 0, Math.round(a*k), full.width, pc.height, 0, 0, pc.width, pc.height);
+    if(!pdf) pdf = await html2pdf().set({margin:0, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from('<div></div>','string').toPdf().get('pdf');
+    else pdf.addPage();
+    const h=Math.min(innerH, pc.height*innerW/pc.width);
+    pdf.addImage(pc.toDataURL('image/jpeg',0.92),'JPEG', M.side, M.top, innerW, h);
+  }
+  const brand=CONFIG.brandName, today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  // Make the course box clickable
+  if(plan.cta && CONFIG.ctaUrl && /^(https?|mailto):/.test(CONFIG.ctaUrl)){
+    const mmPerPx=innerW/plan.width;
+    plan.slices.forEach(([a,b],idx)=>{
+      if(plan.cta.top>=a && plan.cta.top<b){
+        pdf.setPage(idx+1);
+        pdf.link(M.side+plan.cta.left*mmPerPx, M.top+(plan.cta.top-a)*mmPerPx, plan.cta.w*mmPerPx, plan.cta.h*mmPerPx, {url:CONFIG.ctaUrl});
+      }
+    });
+  }
+  const n=pdf.internal.getNumberOfPages();
+  for(let i=1;i<=n;i++){
+    pdf.setPage(i); pdf.setFontSize(8); pdf.setTextColor(130);
+    pdf.text(`${brand} · Money Health Check · ${today}`, M.side, 290);
+    pdf.text(`Page ${i} of ${n}`, 210-M.side, 290, {align:'right'});
+  }
+  pdfDoc=pdf;
+}
+
+/* ---------- charts (literal colours so the PDF renderer can draw them) ---------- */
+function kfmt(n){ const a=Math.abs(n); return (n<0?'-':'')+(a>=1e6?'£'+(a/1e6).toFixed(a>=1e7?0:1)+'m':a>=1000?'£'+Math.round(a/1000)+'k':'£'+Math.round(a)); }
+function lineChart({series, xLabel, W=740, H=270}){
+  const L=64,Rp=14,T=12,B=34, n=Math.max(...series.map(s=>s.v.length));
+  if(n<2) return '';
+  const all=series.flatMap(s=>s.v), maxV=Math.max(...all)*1.08||1;
+  const x=i=>L+(W-L-Rp)*(i/(n-1)), y=v=>T+(H-T-B)*(1-v/maxV);
+  let g='';
+  for(let k=0;k<=4;k++){ const v=maxV*k/4, yy=y(v);
+    g+=`<line x1="${L}" x2="${W-Rp}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}" stroke="${C.line}" stroke-width="1"/>`+
+       `<text x="${L-8}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="12" font-family="Arial" fill="${C.muted}">${kfmt(v)}</text>`; }
+  const ticks=[...new Set([0,Math.round((n-1)/4),Math.round((n-1)/2),Math.round(3*(n-1)/4),n-1])];
+  ticks.forEach(i=>g+=`<text x="${x(i).toFixed(1)}" y="${H-10}" text-anchor="${i===0?'start':i===n-1?'end':'middle'}" font-size="12" font-family="Arial" fill="${C.muted}">${xLabel(i)}</text>`);
+  series.forEach(s=>{ if(s.fill){ const pts=s.v.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    g+=`<polygon points="${x(0)},${y(0)} ${pts} ${x(s.v.length-1).toFixed(1)},${y(0)}" fill="${s.c}" fill-opacity="0.10"/>`; }});
+  series.forEach(s=>{
+    const pts=s.v.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    g+=`<polyline points="${pts}" fill="none" stroke="${s.c}" stroke-width="${s.w||2.5}" ${s.dash?'stroke-dasharray="6 5"':''} stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(!s.dash) g+=`<circle cx="${x(s.v.length-1).toFixed(1)}" cy="${y(s.v[s.v.length-1]).toFixed(1)}" r="${(s.w||2.5)+1.5}" fill="${s.c}"/>`;
+  });
+  // Charts are embedded as images: renders crisply in the PDF and on screen
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W*2}" height="${H*2}">${g}</svg>`;
+  return `<img alt="chart" width="${W}" height="${H}" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}" style="display:block;width:100%;height:auto;aspect-ratio:${W}/${H}">`;
+}
+const legend = items => `<div class="pdf-legend">${items.map(([c,l,v,dash])=>`<span><i style="background:${c};${dash?'opacity:.6':''}"></i>${l}${v!==undefined?` <b>${v}</b>`:''}</span>`).join('')}</div>`;
+function meter(value,max,color,marks){
+  const w=v=>Math.max(0,Math.min(100,v/max*100));
+  return `<div class="pdf-mw"><div class="pdf-meter"><div class="fill" style="width:${w(value)}%;background:${color}"></div>${
+    marks.map(m=>`<div class="mk" style="left:${w(m.v)}%">${m.top?`<b>${m.top}</b>`:''}${m.bot?`<em>${m.bot}</em>`:''}</div>`).join('')}</div></div>`;
+}
+const explain = (html) => `<div class="pdf-explain"><div class="hd">What this means</div>${html}</div>`;
+
+/* ---------- the PDF report ---------- */
+function buildReport(){
+  const r=R, i=r.inp, name=esc($('#fname').value.trim());
+  const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const incomeLabel={salary:'salaried',hourly:'paid hourly',self:'self-employed',irregular:'on a mixed income',none:'not currently earning'}[i.income];
+  const homeLabel={rent:'renting',mortgage:'with a mortgage',outright:'owns home outright',family:'living with family'}[i.housing];
+  const [rv]=rateVerdict(r.savingsRate), [ev]=emVerdict(r.emMonths);
+  let n=0; const sec=(title,body,tag='')=>`<div class="pdf-sec"><div class="pdf-sec-h"><span class="n">${++n}</span><h2>${title}</h2>${tag?`<span class="tag">${tag}</span>`:''}</div><div class="pdf-sec-b">${body}</div></div>`;
+  const riskCol={cautious:C.cash, balanced:C.brand2, adventurous:C.isa};
+  const yrLabel = k => k===0 ? 'Now' : 'Yr '+k;
+  const ageLabel = k => 'Age '+(i.age+k);
+  const parts=[];
+
+  /* cover */
+  parts.push(`<div class="pdf-cover">
+    <div class="ey">${esc(CONFIG.brandName)} · Money Health Check · ${today}</div>
+    <h1>${name?name+'’s':'Your'} money, in one report</h1>
+    <p>Age ${i.age}, ${incomeLabel}, ${homeLabel}. Attitude to risk: ${RISK_LABEL[r.risk].toLowerCase()}.</p>
+    <div class="pdf-kpis">
+      <div class="pdf-kpi"><div class="l">Take-home a month</div><div class="v">${gbp(r.th)}</div></div>
+      <div class="pdf-kpi"><div class="l">Saving rate</div><div class="v">${r.savingsRate===null?'—':pct(r.savingsRate)}</div><div class="s">${rv}</div></div>
+      <div class="pdf-kpi"><div class="l">Emergency cover</div><div class="v">${mo(r.emMonths)}</div><div class="s">${ev}</div></div>
+      <div class="pdf-kpi"><div class="l">Net worth</div><div class="v">${gbp(r.netWorth)}</div><div class="s">${r.homeIncluded?'Including home':'Excluding property'}</div></div>
+      <div class="pdf-kpi"><div class="l">Pension at ${r.spa}</div><div class="v">${gbp(r.pensionProj.balanced.pot)}</div><div class="s">Balanced, in today’s money</div></div>
+      <div class="pdf-kpi"><div class="l">Work optional at</div><div class="v">${r.fiNA?'—':r.fiAge?'Age '+r.fiAge:'90+'}</div><div class="s">On current pace</div></div>
+    </div></div>`);
+  parts.push(`<div class="pdf-disc"><b>Please read:</b> this report is built from the figures you entered and simple assumptions. It\u2019s for information and education only — it isn\u2019t a full financial fact find or financial advice, and it doesn\u2019t recommend any product or tell you what to do. For advice on your own situation, speak to a regulated financial adviser.</div>`);
+
+  /* 1 goal */
+  const G=r.goal; let gb='';
+  if(G.type==='house'){
+    if(G.months===0) gb=`<p class="pdf-lede">You’re aiming for a <b>${gbp(G.target)}</b> deposit, and your cash and investments already come to <b>${gbp(G.have)}</b>.</p><div class="pdf-good">On these numbers, you’ve already reached your deposit target.</div>`;
+    else if(G.months===null) gb=`<p class="pdf-lede">You’re aiming for a <b>${gbp(G.target)}</b> deposit and have <b>${gbp(G.have)}</b> so far.</p><div class="pdf-note">Right now nothing is left over each month to add to it, so a timeline can’t be worked out. Freeing up even a small amount starts the clock.</div>`;
+    else gb=`<p class="pdf-lede">You’re aiming for a <b>${gbp(G.target)}</b> deposit. Counting cash and investments you have <b>${gbp(G.have)}</b>, with about <b>${gbp(G.monthly)}</b> a month going towards it.</p>
+      <div class="pdf-grid"><div class="pdf-k"><div class="l">Still to save</div><div class="v">${gbp(G.target-G.have)}</div></div><div class="pdf-k"><div class="l">At your current pace</div><div class="v">${ym(G.months)}</div></div><div class="pdf-k"><div class="l">Around</div><div class="v">${monthsToDate(G.months)}</div><div class="s">Age ${i.age+Math.ceil(G.months/12)}</div></div></div>
+      ${meter(G.have,G.target,C.good,[{v:G.target/2,top:'Halfway'}])}`;
+    gb+=explain(`<p><b>Deposit</b> is the part of the home’s price you pay upfront; the mortgage covers the rest. A bigger deposit usually means a lower <b>loan-to-value (LTV)</b> and cheaper mortgage rates — 10% and 15% deposits are common milestones.</p>${i.age<40?'<p>A <b>Lifetime ISA</b> adds a 25% government bonus to up to £4,000 a year for first-time buyers under 40, with rules on property price and withdrawals.</p>':''}<p>This timeline ignores interest or growth, so it’s on the cautious side.</p>`);
+  } else if(G.type==='safety'){
+    gb = G.months===0 ? `<p class="pdf-lede">A common target is six months of essentials — about <b>${gbp(G.target)}</b> for you.</p><div class="pdf-good">Your ${gbp(G.have)} of cash already covers it.</div>`
+      : `<p class="pdf-lede">A common target is six months of essentials — about <b>${gbp(G.target)}</b> for you. You have <b>${gbp(G.have)}</b>.</p>
+      ${meter(G.have,G.target,C.good,[{v:G.target/2,top:'3 months'},{v:G.target,top:'6 months'}])}
+      ${G.months===null?'<div class="pdf-note">Nothing is left over each month to build it yet — that’s the first thing that would need to change.</div>':`<div class="pdf-grid two"><div class="pdf-k"><div class="l">Gap</div><div class="v">${gbp(G.target-G.have)}</div></div><div class="pdf-k"><div class="l">At ${gbp(G.monthly)} a month</div><div class="v">${monthsToDate(G.months)}</div></div></div>`}`;
+    gb+=explain('<p>A <b>safety net</b> (or emergency fund) is cash you can reach quickly if your income stops or a big bill lands. It’s what stops a bad month becoming debt — and it means you never have to sell investments at a bad time.</p>');
+  } else if(G.type==='debt'){
+    gb = i.debt<=0 ? '<p class="pdf-lede">You haven’t entered any debts besides a mortgage or student loan — on that front, you’re already there.</p>'
+      : G.months===null ? `<div class="pdf-note">At ${gbp(r.debtPay)} a month, repayments don’t cover the interest, so the balance won’t come down.</div>`
+      : `<p class="pdf-lede">At ${gbp(r.debtPay)} a month you’d be debt-free in <b>${monthsToDate(G.months)}</b>, paying about <b>${gbp(r.payoff.interest)}</b> in interest. See the debts section for how paying a little more changes that.</p>`;
+    gb+=explain('<p>Two popular ways to clear several debts: the <b>avalanche</b> method pays off the highest interest rate first (cheapest overall), the <b>snowball</b> method clears the smallest balance first (quick wins that keep you going).</p>');
+  } else if(G.type==='early'){
+    gb=`<p class="pdf-lede">To make work optional by <b>${G.age}</b>, your investments and pension would need to reach roughly <b>${gbp(r.fiNumber)}</b>.</p>
+      <div class="pdf-grid"><div class="pdf-k"><div class="l">Going in now</div><div class="v">${gbp(G.monthlyNow)}/mo</div></div><div class="pdf-k"><div class="l">Needed for age ${G.age}</div><div class="v">${gbp(G.monthlyNeeded)}/mo</div></div><div class="pdf-k"><div class="l">On current pace</div><div class="v">${r.fiAge?'Age '+r.fiAge:'Beyond 90'}</div></div></div>
+      ${G.beforeAccess?`<div class="pdf-note">Pensions usually can’t be touched until ${RULES.pensionAccessAge}. Stopping before then needs enough <b>outside</b> your pension to bridge the gap.</div>`:''}`;
+    gb+=explain('<p>Early retirement is usually framed as <b>financial independence</b>: having enough invested that withdrawals could cover your spending. The financial independence section explains the number.</p><p>Assumes 4% a year growth after inflation.</p>');
+  } else {
+    const k=r.risk, s=r.investRisk[k];
+    gb=`<p class="pdf-lede">At your ${RISK_LABEL[k].toLowerCase()} attitude to risk, your ${gbp(i.invest)} plus ${gbp(i.investM)} a month could grow to:</p>
+      <div class="pdf-grid"><div class="pdf-k"><div class="l">In 10 years</div><div class="v">${gbp(s[10])}</div></div><div class="pdf-k"><div class="l">In 20 years</div><div class="v">${gbp(s[20])}</div></div><div class="pdf-k"><div class="l">In 30 years</div><div class="v">${gbp(s[30])}</div></div></div>`;
+    gb+=explain('<p><b>Compounding</b> means your growth starts earning growth of its own. Early on it feels slow; later, growth can add more each year than you pay in. That’s why time in the market matters more than timing it.</p><p>Figures are after inflation, so they’re in today’s money.</p>');
+  }
+  parts.push(sec('Your goal: '+{house:'buy a home',safety:'build a safety net',debt:'clear your debts',early:'retire early',grow:'grow your wealth'}[i.goal], gb, 'Your priority'));
+
+  /* 2 monthly money */
+  const segs=[['Housing',r.housing,C.brand2],['Everyday spending'+(r.spendEstimated?' (est.)':''),r.spend,C.soft],['Debt repayments',r.debtPay,C.bad],
+    ['Investing',r.investM,C.isa],['Pension (from take-home)',r.pensionFromPay,'#7cc4a4'],['Left over',Math.max(0,r.leftover),C.line]].filter(s=>s[1]>0);
+  const segT=Math.max(r.th,segs.reduce((a,s)=>a+s[1],0))||1;
+  let mb=`<p class="pdf-lede">Out of <b>${gbp(r.th)}</b> take-home each month:</p>
+    <div class="pdf-stack">${segs.map(s=>`<span style="width:${(s[1]/segT*100).toFixed(2)}%;background:${s[2]}"></span>`).join('')}</div>
+    <div class="pdf-leg">${segs.map(s=>`<div><span><i style="background:${s[2]}"></i>${s[0]}</span><b>${gbp(s[1])}</b></div>`).join('')}</div>
+    ${r.leftover<0?`<div class="pdf-note">Outgoings are about <b>${gbp(-r.leftover)} a month more</b> than take-home. That gap usually comes from savings, credit or an overdraft.</div>`:''}`;
+  if(r.gross) mb+=`<table class="pdf-tbl"><thead><tr><th>Your pay</th><th>A year</th><th>A month</th></tr></thead><tbody>
+      <tr><td>${i.income==='self'?'Profit':'Gross pay'}</td><td>${gbp(r.gross)}</td><td>${gbp(r.gross/12)}</td></tr>
+      ${r.pensionOwnPre?`<tr><td>Your pension contribution</td><td>−${gbp(r.pensionOwnPre)}</td><td>−${gbp(r.pensionOwnPre/12)}</td></tr>`:''}
+      <tr><td>Income tax</td><td>−${gbp(r.tax)}</td><td>−${gbp(r.tax/12)}</td></tr>
+      <tr><td>National Insurance</td><td>−${gbp(r.ni)}</td><td>−${gbp(r.ni/12)}</td></tr>
+      ${r.sl?`<tr><td>Student loan</td><td>−${gbp(r.sl)}</td><td>−${gbp(r.sl/12)}</td></tr>`:''}
+      <tr class="total"><td>Take-home</td><td>${gbp(r.th*12)}</td><td>${gbp(r.th)}</td></tr></tbody></table>`;
+  mb+=explain(`<p><b>Gross</b> pay is before deductions; <b>net</b> or take-home is what lands in your account. Everyone gets a tax-free <b>Personal Allowance</b> of £12,570; above that, income tax is 20% (basic rate), then 40% above £50,270 (higher rate). <b>National Insurance</b> funds things like the State Pension.</p>
+    <p>A popular budgeting rule of thumb is <b>50/30/20</b>: about 50% on needs, 30% on wants, 20% on saving and debt. Your saving rate is ${r.savingsRate===null?'—':pct(r.savingsRate)}.</p>`);
+  parts.push(sec('Where your money goes each month', mb, 'Cashflow'));
+
+  /* 3 roadmap */
+  parts.push(sec('Your money roadmap', `<p class="pdf-lede">A commonly used order of priorities in UK personal finance — a rule of thumb, not advice.</p><ul class="rm">${roadmapHTML()}</ul>`
+    + explain('<p>The idea behind the order: protect yourself first (a buffer and an emergency fund), stop expensive interest working against you, take any free money on offer (employer contributions, tax relief), then let long-term investments do the heavy lifting.</p>'), 'Priorities'));
+
+  /* 4 safety net */
+  let sb=`<p class="pdf-lede">Your essentials — housing, spending and debt repayments — come to <b>${gbp(r.essentials)}</b> a month. Your <b>${gbp(i.cash)}</b> of cash would cover <b>${mo(r.emMonths)}</b>.</p>`;
+  if(r.essentials>0) sb+=meter(i.cash, Math.max(r.essentials*7, i.cash*1.05), (r.emMonths>=3?C.good:r.emMonths>=1?C.ok:C.bad), [{v:r.essentials*3,top:'3 months',bot:gbp(r.essentials*3)},{v:r.essentials*6,top:'6 months',bot:gbp(r.essentials*6)}]);
+  sb+=explain('<p>An <b>emergency fund</b> covers essential costs if your income stops — job loss, illness, a broken boiler. A common guide is <b>3–6 months</b>; people with less secure income (self-employed, hourly, a single earner) often aim for the top of that range.</p><p>It’s usually kept in an <b>easy-access</b> savings account or Premium Bonds, not invested, because it has to be there in full when you need it.</p>');
+  parts.push(sec('Your safety net', sb, 'Protection'));
+
+  /* 5 debts */
+  if(i.debt>0){
+    let db;
+    if(r.payoff.months===null) db=`<div class="pdf-note">At ${gbp(r.debtPay)} a month and around ${pct(r.apr)} interest, repayments don’t cover the interest — so the ${gbp(i.debt)} balance won’t come down.</div>`;
+    else {
+      const ser=[{v:r.payoff.s,c:C.bad,w:3},{v:r.payoff50.s,c:C.ok,w:2.2},{v:r.payoff100.s,c:C.good,w:2.2}];
+      const maxLen=Math.max(...ser.map(s=>s.v.length)); ser.forEach(s=>{ while(s.v.length<maxLen) s.v.push(0); });
+      db=`<div class="pdf-grid"><div class="pdf-k"><div class="l">Owed</div><div class="v">${gbp(i.debt)}</div></div><div class="pdf-k"><div class="l">Debt-free</div><div class="v">${monthsToDate(r.payoff.months)}</div><div class="s">${ym(r.payoff.months)}</div></div><div class="pdf-k"><div class="l">Interest along the way</div><div class="v">${gbp(r.payoff.interest)}</div><div class="s">At ~${pct(r.apr)} APR</div></div></div>
+        ${legend([[C.bad,'Paying '+gbp(r.debtPay)+'/mo', r.payoff.months?ym(r.payoff.months):''],[C.ok,'+£50/mo', r.payoff50.months?ym(r.payoff50.months)+', saves '+gbp(r.payoff.interest-r.payoff50.interest):''],[C.good,'+£100/mo', r.payoff100.months?ym(r.payoff100.months)+', saves '+gbp(r.payoff.interest-r.payoff100.interest):'']])}
+        ${lineChart({series:ser, xLabel:k=>k===0?'Now':(k/12).toFixed(k%12?1:0)+' yrs', H:220})}`;
+    }
+    db+=explain('<p><b>APR</b> (annual percentage rate) is the yearly cost of borrowing, including fees. Interest is charged on what you still owe, so it <b>compounds against you</b> — which is why small extra payments early on save more than you’d expect.</p><p><b>Avalanche</b> (highest rate first) costs least overall; <b>snowball</b> (smallest balance first) gives quicker wins.</p>');
+    parts.push(sec('Your debts', db, 'Borrowing'));
+  }
+
+  /* 6 home */
+  if(i.housing==='mortgage'){
+    let hb=`<div class="pdf-grid"><div class="pdf-k"><div class="l">Mortgage left</div><div class="v">${gbp(i.mortBal)}</div></div><div class="pdf-k"><div class="l">Mortgage-free</div><div class="v">${r.mortgageFreeYear}</div><div class="s">Age ${r.mortgageFreeAge}</div></div>${i.homeVal>0?`<div class="pdf-k"><div class="l">Your equity</div><div class="v">${gbp(r.equity)}</div><div class="s">LTV ${pct(i.mortBal/i.homeVal)}</div></div>`:''}</div>`;
+    hb+=explain('<p><b>Equity</b> is the part of your home you own outright: its value minus the mortgage. <b>Loan-to-value (LTV)</b> is the mortgage as a share of the home’s value — lower LTVs usually unlock cheaper rates when you remortgage.</p>');
+    parts.push(sec('Your home', hb, 'Property'));
+  }
+
+  /* 7 risk */
+  const capTxt={low:'Low',medium:'Medium',high:'High'}[r.capacity];
+  let mismatch='';
+  if(r.risk==='adventurous' && r.capacity==='low') mismatch='<div class="pdf-note">Your attitude is adventurous, but your finances have less room to absorb a fall right now. When the two don’t match, many people let the lower one guide them until the gaps close.</div>';
+  else if(r.risk==='cautious' && r.capacity==='high') mismatch='<div class="pdf-note">Your finances could absorb more ups and downs than your attitude suggests. Being very cautious has a cost too: cash can lose value to inflation over long periods.</div>';
+  else mismatch='<div class="pdf-good">Your attitude to risk and your capacity for loss point in a similar direction.</div>';
+  let rb=`<p class="pdf-lede"><b>Attitude to risk</b> is how you feel about ups and downs. <b>Capacity for loss</b> (often called risk tolerance) is how much of a fall your finances could absorb without changing your life.</p>
+    <div class="pdf-lbl" style="font-weight:700;font-size:12.5px;margin-top:6px">Your attitude to risk</div>
+    <div class="pdf-scale">${['cautious','balanced','adventurous'].map(k=>`<div class="${k===r.risk?'on':''}"><b>${RISK_LABEL[k]}</b>${{cautious:'Steadier, lower growth',balanced:'Some ups and downs',adventurous:'Bigger swings, more growth'}[k]}</div>`).join('')}</div>
+    <div class="pdf-lbl" style="font-weight:700;font-size:12.5px;margin-top:10px">Your capacity for loss: ${capTxt}</div>
+    <ul class="pdf-factors">${r.capFactors.map(([t,ok])=>`<li><span class="m" style="background:${ok?C.good:C.line};color:${ok?'#fff':C.muted}">${ok?'✓':'–'}</span>${t}</li>`).join('')}</ul>
+    ${mismatch}`;
+  rb+=explain('<p><b>Volatility</b> is how much an investment’s value jumps around. Shares are more volatile than cash but have historically grown more over long periods. Your <b>time horizon</b> — how long until you need the money — matters: the longer it is, the more time there is to recover from falls.</p><p>Your emergency fund is what turns attitude into capacity: with cash to fall back on, you’re less likely to be forced to sell investments when prices are down.</p>');
+  parts.push(sec('Attitude to risk and capacity for loss', rb, 'Risk'));
+
+  /* 8 cash vs PB vs ISA */
+  const cm10=r.cmp.slice(0,31), last=cm10[30];
+  let cb=`<p class="pdf-lede">If your ${gbp(i.cash)} of savings plus ${gbp(r.cmpUsed)} a month${r.cmpExample?' (an example amount)':''} went into each for 30 years — before inflation:</p>
+    ${legend([[C.isa,'Stocks & Shares ISA ('+RISK_LABEL[r.risk].toLowerCase()+')',gbp(last.isa)],[C.pb,'Premium Bonds',gbp(last.pb)],[C.cash,'Easy-access savings',gbp(last.sav)],[C.muted,'Keeping up with inflation',gbp(last.inf),true]])}
+    ${lineChart({series:[{v:cm10.map(p=>p.inf),c:C.muted,w:1.8,dash:true},{v:cm10.map(p=>p.sav),c:C.cash},{v:cm10.map(p=>p.pb),c:C.pb},{v:cm10.map(p=>p.isa),c:C.isa,w:3}], xLabel:yrLabel, H:230})}
+    <table class="pdf-tbl"><thead><tr><th>After</th><th>Paid in</th><th>Savings</th><th>Premium Bonds</th><th>ISA</th></tr></thead><tbody>
+    ${[1,5,10,20,30].map(y=>{const p=r.cmp[y];return `<tr><td>${y} year${y>1?'s':''}</td><td>${gbp(p.paid)}</td><td>${gbp(p.sav)}</td><td>${gbp(p.pb)}</td><td>${gbp(p.isa)}</td></tr>`;}).join('')}</tbody></table>`;
+  cb+=explain(`<p><b>AER</b> (annual equivalent rate) shows what a savings account pays over a year. Interest is tax-free up to your <b>Personal Savings Allowance</b> — £1,000 for basic-rate and £500 for higher-rate taxpayers${last.tax>1?`; on these numbers you’d pay about ${gbp(r.cmp[10].tax)} in tax over 10 years`:''}.</p><p><b>Premium Bonds</b> pay tax-free prizes instead of interest; the ${(RULES.premiumBonds*100).toFixed(2)}% <b>prize fund rate</b> is an average, so most people win less. A <b>Stocks and Shares ISA</b> shelters investments from tax but can fall in value. The dashed line is what your money would need just to keep its buying power.</p>`);
+  parts.push(sec('Cash vs Premium Bonds vs a Stocks and Shares ISA', cb, 'Comparison'));
+
+  /* 9 investing: risk paths */
+  const H=r.investHorizon;
+  let ib=`<p class="pdf-lede">You have <b>${gbp(i.invest)}</b> invested and add <b>${gbp(i.investM)}</b> a month. Here’s how that could grow over ${H} years at three levels of risk — your attitude is highlighted. After inflation, in today’s money.</p>
+    ${legend(['cautious','balanced','adventurous'].map(k=>[riskCol[k], RISK_LABEL[k]+' ('+(RULES.growth[k]*100).toFixed(1).replace('.0','')+'%)'+(k===r.risk?' — you':''), gbp(r.investRisk[k][H])]))}
+    ${lineChart({series:['cautious','balanced','adventurous'].map(k=>({v:r.investRisk[k],c:riskCol[k],w:k===r.risk?3.6:1.8,fill:k===r.risk})), xLabel:yrLabel})}
+    <div class="pdf-lbl" style="font-size:12.5px;margin-top:8px">You’re using <b>${pct(r.isaUsed)}</b> of this year’s £20,000 ISA allowance.</div>
+    ${meter(i.investM*12, RULES.isaAllowance, C.isa, [{v:5000,bot:'£5k'},{v:10000,bot:'£10k'},{v:15000,bot:'£15k'}])}`;
+  ib+=explain('<p><b>Real</b> returns are what’s left after inflation; <b>nominal</b> returns are the headline number. Showing real returns keeps future figures in today’s money, so £100,000 here means roughly what £100,000 buys now.</p><p>The <b>ISA allowance</b> is £20,000 a year across all your ISAs. It resets each April and unused allowance doesn’t carry over. <b>Diversification</b> — spreading money across many companies and countries, often through index funds — is a common way to reduce the risk of any one investment.</p>');
+  parts.push(sec('Investing: three risk paths', ib, 'Growth'));
+
+  /* 10 investing: what more could do */
+  const exCols=[C.muted,C.cash,C.brand2,C.isa,C.accent];
+  const ex=r.investExtra;
+  let xb=`<p class="pdf-lede">Same balanced growth (${(RULES.growth.balanced*100)}% after inflation), different monthly amounts:</p>
+    ${legend(ex.map((e,k)=>[exCols[k%exCols.length], e.label, gbp(e.s[H])]))}
+    ${lineChart({series:ex.map((e,k)=>({v:e.s,c:exCols[k%exCols.length],w:k===0?3.2:2.2,dash:false})), xLabel:yrLabel})}
+    <table class="pdf-tbl"><thead><tr><th>Monthly amount</th><th>Paid in over ${H} yrs</th><th>Value in 10 yrs</th><th>Value in ${H} yrs</th><th>Growth</th></tr></thead><tbody>
+    ${ex.map((e,k)=>`<tr class="${k===0?'me':''}"><td>${gbp(e.monthly)}</td><td>${gbp(i.invest+e.monthly*12*H)}</td><td>${gbp(e.s[10])}</td><td>${gbp(e.s[H])}</td><td>${gbp(e.s[H]-(i.invest+e.monthly*12*H))}</td></tr>`).join('')}</tbody></table>`;
+  xb+=explain('<p>The "Growth" column is money you didn’t pay in — returns earning returns. The gap between the lines widens over time because of <b>compounding</b>, which is why small increases now can matter more than large ones later.</p><p><b>Pound-cost averaging</b> — investing a fixed amount every month — means you buy more when prices are low and less when they’re high, and takes the guesswork out of timing.</p>');
+  parts.push(sec('Investing: what a little more could do', xb, 'Growth'));
+
+  /* 11 pension */
+  let pb=`<p class="pdf-lede">${gbp(i.pensionPot)} today, with about <b>${gbp(r.pensionAnnual)}</b> a year going in${r.employerAnnual?` (${gbp(r.employerAnnual)} from your employer)`:''}. How it could grow to your State Pension age of ${r.spa}, in today’s money:</p>`;
+  if(r.yearsToSpa>0) pb+=legend(['cautious','balanced','adventurous'].map(k=>[riskCol[k], RISK_LABEL[k]+(k===r.risk?' — you':''), gbp(r.pensionProj[k].pot)]))
+    + lineChart({series:['cautious','balanced','adventurous'].map(k=>({v:r.pensionRisk[k],c:riskCol[k],w:k===r.risk?3.6:1.8,fill:k===r.risk})), xLabel:ageLabel, H:240});
+  pb+=`<table class="pdf-tbl"><thead><tr><th>Growth</th><th>Pot at ${r.spa}</th><th>From your pot*</th><th>+ State Pension</th><th>= Yearly income</th></tr></thead><tbody>
+    ${['cautious','balanced','adventurous'].map(k=>`<tr class="${k===r.risk?'me':''}"><td>${RISK_LABEL[k]}</td><td>${gbp(r.pensionProj[k].pot)}</td><td>${gbp(r.pensionProj[k].fromPot)}</td><td>${gbp(RULES.statePension)}</td><td>${gbp(r.pensionProj[k].income)}</td></tr>`).join('')}</tbody></table>
+    <div class="pdf-foot" style="font-size:11px;color:${C.muted};margin-top:4px">*Drawing 4% of the pot each year — a rate designed to make a pot last around 30 years. All figures in today\u2019s money.</div>
+    ${r.pensionProj[r.risk].fromPot < RULES.statePension*0.5 ? `<div class="pdf-note">Most of this income would come from the <b>State Pension</b>. Your pot would add about <b>${gbp(r.pensionProj[r.risk].fromPot/12)} a month</b> on top${r.pensionAnnual<1?' — with nothing going in each year, it only grows from investment returns':''}.</div>` : ''}
+    <div class="pdf-lbl" style="font-weight:700;font-size:12.5px;margin-top:14px">Your ${RISK_LABEL[r.risk].toLowerCase()} income vs the PLSA Retirement Living Standards (one person)</div>
+    ${meter(r.pensionProj[r.risk].income, RULES.plsa.com*1.2, C.brand2, [{v:RULES.plsa.min,top:'Minimum',bot:gbp(RULES.plsa.min)},{v:RULES.plsa.mod,top:'Moderate',bot:gbp(RULES.plsa.mod)},{v:RULES.plsa.com,top:'Comfortable',bot:gbp(RULES.plsa.com)}])}`;
+  pb+=explain(`<p>Pensions get <b>tax relief</b>: money goes in before income tax, so £100 in your pension costs a basic-rate taxpayer £80. Employer contributions are on top of your pay. You can usually access a private pension from 57 (from 2028); the <b>State Pension</b> starts at ${r.spa} for you and the full amount needs 35 years of National Insurance.</p><p>The <b>PLSA Retirement Living Standards</b> estimate what a minimum, moderate or comfortable retirement costs a year. The <b>4% rule of thumb</b> is a common estimate of how much you can draw from a pot each year so it lasts around 30 years — so a £100,000 pot gives roughly £4,000 a year, not £100,000 spread over a few years.</p>`);
+  parts.push(sec('Your pension', pb, 'Retirement'));
+
+  /* 12 FI */
+  let fb = r.fiNA ? '<p class="pdf-lede">Add your monthly spending to see your financial independence number.</p>'
+    : `<p class="pdf-lede">Your number is <b>25 times your yearly spending</b> of ${gbp(r.yearSpend)}.</p>
+    <div class="pdf-grid"><div class="pdf-k"><div class="l">Your number</div><div class="v">${gbp(r.fiNumber)}</div></div><div class="pdf-k"><div class="l">Progress so far</div><div class="v">${pct(r.fiProgress)}</div><div class="s">Investments + pension</div></div><div class="pdf-k"><div class="l">On current pace</div><div class="v">${r.fiAge?'Age '+r.fiAge:'Beyond 90'}</div><div class="s">${r.fiYears!==null?r.fiYears+' years away':''}</div></div></div>
+    ${meter(i.invest+i.pensionPot, r.fiNumber, C.isa, [{v:r.fiNumber*0.25,top:'25%'},{v:r.fiNumber*0.5,top:'50%'},{v:r.fiNumber*0.75,top:'75%'}])}
+    ${r.fiAge && r.fiAge<RULES.pensionAccessAge?`<div class="pdf-note">This counts your pension, which usually can’t be accessed until ${RULES.pensionAccessAge}.</div>`:''}`;
+  fb+=explain('<p><b>Financial independence (FI)</b> is when your investments could cover your living costs, so work becomes a choice. The <b>25×</b> figure comes from the <b>4% rule</b>: research suggests withdrawing about 4% a year has historically lasted around 30 years. It’s a rule of thumb, not a guarantee.</p><p>Two levers move your FI age: investing more, and spending less — which also shrinks the number you need.</p>');
+  parts.push(sec('Financial independence', fb, 'Freedom'));
+
+  /* 13 look into */
+  const look=[];
+  if(r.leftover<0) look.push(`<b>More is going out than coming in</b> — about ${gbp(-r.leftover)} a month on these figures. Many people start by tracking a month of spending to see where it goes.`);
+  if(r.emMonths!==null && r.emMonths<3) look.push(`<b>Your safety net covers ${mo(r.emMonths)}.</b> A common guide is 3–6 months of essentials (${gbp(r.essentials*3)}–${gbp(r.essentials*6)} for you).`);
+  if(r.highDebt && i.cash>r.essentials) look.push(`<b>Your debt likely costs more than your savings earn.</b> At around ${pct(r.apr)}, some people compare this with what their cash earns before deciding how to split their money.`);
+  if(r.employee && i.empPct>0) look.push('<b>Employer pension matching.</b> Some employers pay in more if you do. Your HR team or scheme booklet will say whether yours matches, and up to what level.');
+  if(r.employee && i.empPct===0) look.push('<b>Your employer isn’t paying into a pension.</b> Most employees aged 22+ earning over £10,000 must be auto-enrolled with an employer contribution.');
+  if(i.income==='self') look.push('<b>No employer pays into your pension.</b> Personal pensions get tax relief — the government adds £25 for every £100 you put in.');
+  if(r.gross && r.gross>100000 && r.gross<=125140) look.push('<b>The £100k tax trap.</b> Between £100,000 and £125,140 you lose your Personal Allowance — an effective 60% tax rate. Pension contributions reduce the income this is measured on.');
+  if(i.sl==='p2'||i.sl==='p5') look.push(`<b>Your student loan works more like a tax.</b> ${i.sl==='p2'?'Plan 2 balances are written off after 30 years':'Plan 5 balances are written off after 40 years'}, so many people never repay in full. Overpaying only helps if you’d clear it before then.`);
+  if(r.th>0 && r.housing/r.th>0.35) look.push(`<b>Housing takes ${pct(r.housing/r.th)} of your take-home.</b> A common rule of thumb is around 30%.`);
+  if(i.investM>0) look.push('<b>We’ve assumed your investments are in an ISA.</b> Investments outside one can be taxed on dividends and gains.');
+  if(r.pensionProj[r.risk].income < RULES.plsa.mod) look.push(`<b>Projected retirement income is below the PLSA “moderate” standard</b> of ${gbp(RULES.plsa.mod)} a year. Small increases now have decades to grow.`);
+  if(r.risk==='adventurous' && r.capacity==='low') look.push('<b>Your attitude to risk is higher than your capacity for loss.</b> See the risk section.');
+  look.push('<b>Check your State Pension forecast</b> at gov.uk/check-state-pension. We’ve assumed the full amount.');
+  if(r.spendEstimated) look.push(`<b>Your spending was estimated</b> at ${gbp(r.spend)} a month. Your real figure could change several numbers here.`);
+  parts.push(sec('Things worth looking into', `<ul class="pdf-look">${look.map(l=>`<li><span class="ar">→</span>${l}</li>`).join('')}</ul><div class="pdf-foot" style="font-size:11px;color:${C.muted};margin-top:8px">General points based on your numbers, not recommendations. Everyone’s situation is different.</div>`, 'Next steps'));
+
+  /* CTA + legal */
+  parts.push(`<div class="pdf-cta"><h3>${esc(CONFIG.ctaTitle)}</h3><p>${esc(CONFIG.ctaText)}</p><span class="u">${esc(CONFIG.ctaUrl.replace(/^mailto:/,'').replace(/\?.*$/,'').replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,''))} →</span></div>`);
+  parts.push(`<div class="pdf-legal"><p><b>Educational and illustrative only — not financial advice.</b> This report is based on the figures you entered and simple assumptions. It doesn’t recommend any product or course of action. Investments can fall as well as rise, past performance is not a guide to the future, and tax rules can change. For advice on your own situation, speak to a regulated financial adviser.</p>
+    <p><b>Assumptions:</b> 2026/27 tax year, rest-of-UK income tax (Scottish rates differ). Personal Allowance £12,570, reduced by £1 for every £2 over £100,000. Income tax 20%/40%/45%. Employee NI 8%/2%; self-employed Class 4 6%/2%. Student loan thresholds: Plan 1 £26,900, Plan 2 £29,385, Plan 4 £33,795, Plan 5 £25,000 (9%), Postgraduate £21,000 (6%). Workplace pension contributions treated as coming from gross pay before tax, on all pay; personal pension payments get 25% relief added. Full new State Pension £241.30 a week (£12,547 a year). State Pension age 67, or 68 if born after April 1977. PLSA Retirement Living Standards, one person (2025): £13,400 / £31,700 / £43,900. Projections after inflation: cautious 2%, balanced 4%, adventurous 5.5% a year. Cash comparison before inflation: easy-access savings ${(RULES.savingsAER*100).toFixed(1)}% AER, Premium Bonds ${(RULES.premiumBonds*100).toFixed(2)}% average prize rate (max £50,000), ISA 4% / 6% / 7.5%, inflation 2%. Contributions added yearly, growth compounded yearly. Debt interest uses typical rates for the type of debt. Financial independence is 25× yearly spending.</p></div>`);
+
+  $('#pdfStage').innerHTML = `<div class="pdf">${parts.join('')}</div>`;
+}
+
+show(0);
+
+// When embedded in an iframe, tell the parent page how tall the tool is so it never needs an inner scrollbar
+if(window.parent!==window){
+  const wrap=$('.wrap'); let last=0;
+  const send=()=>{ const h=Math.ceil(wrap.getBoundingClientRect().height)+8; if(Math.abs(h-last)>2){ last=h; parent.postMessage({type:'mhc-height',height:h},'*'); } };
+  new ResizeObserver(send).observe(wrap); window.addEventListener('load',send); send();
+}
+}
+</script>
+</body>
+</html>
